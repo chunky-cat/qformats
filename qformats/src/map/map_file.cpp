@@ -144,10 +144,10 @@ namespace qformats::map
 
     void QMapFile::parse_entity_planes(std::stringstream &lines, QBrushEntity *ent)
     {
-        QBrush *brush = new QBrush;
+        Brush brush;
         for (std::string line; std::getline(lines, line);)
         {
-            QFace face;
+            MapFileFace face;
             std::string chars = "()[]";
             for (unsigned int i = 0; i < chars.length(); ++i)
             {
@@ -158,29 +158,40 @@ namespace qformats::map
             l >> face.planePoints[0].x >> face.planePoints[0].y >> face.planePoints[0].z;
             l >> face.planePoints[1].x >> face.planePoints[1].y >> face.planePoints[1].z;
             l >> face.planePoints[2].x >> face.planePoints[2].y >> face.planePoints[2].z;
-            l >> face.texture;
+            std::string texture;
+            l >> texture;
             switch (mapVersion)
             {
             case VALVE_VERSION:
                 l >> face.valveUV.u.x >> face.valveUV.u.y >> face.valveUV.u.z >> face.valveUV.u.w;
-                l >> face.valveUV.v.x >> face.valveUV.v.y >> face.valveUV.v.z >> face.valveUV.u.w;
+                l >> face.valveUV.v.x >> face.valveUV.v.y >> face.valveUV.v.z >> face.valveUV.v.w;
                 break;
             default:
                 l >> face.standardUv.u >> face.standardUv.v;
                 break;
-
-                l >> face.rotation >> face.scaleX >> face.scaleY;
             }
+            l >> face.rotation >> face.scaleX >> face.scaleY;
 
-            glm::vec3 v0v1 = face.planePoints[1] - face.planePoints[0];
-            glm::vec3 v1v2 = face.planePoints[2] - face.planePoints[1];
+            glm::dvec3 v0v1 = face.planePoints[1] - face.planePoints[0];
+            glm::dvec3 v1v2 = face.planePoints[2] - face.planePoints[1];
             face.planeNormal = glm::normalize(glm::cross(v1v2, v0v1));
             face.planeDist = glm::dot(face.planeNormal, face.planePoints[0]);
-            face.plane.PointsToPlane(face.planePoints[0], face.planePoints[1], face.planePoints[2]);
-            brush->faces.push_back(face);
-
-            textures[face.texture] = true;
+            brush.hasValveUV = mapVersion == VALVE_VERSION;
+            face.textureID = getOrAddTexture(texture);
+            brush.faces.push_back(face);
         }
         ent->brushes.push_back(brush);
+    }
+
+    int QMapFile::getOrAddTexture(std::string texture)
+    {
+        for (int i = 0; i < textures.size(); i++)
+        {
+            if (textures[i] == texture)
+                return i;
+        }
+        textures.push_back(texture);
+        int ret = textures.size() - 1;
+        return ret;
     }
 }

@@ -6,11 +6,20 @@
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 #include "types.h"
+#include "brush.h"
 
 namespace qformats::map
 {
     const int STANDARD_VERSION = 100;
     const int VALVE_VERSION = 220;
+
+    struct QBrushEntity : QEntity
+    {
+        std::vector<Brush> brushes;
+        std::string tbType;
+        std::string tbName;
+        bool hasPhongShading;
+    };
 
     class QMapFile
     {
@@ -25,12 +34,14 @@ namespace qformats::map
         void parse_entity_planes(std::stringstream &lines, QBrushEntity *ent);
 
     private:
+        int getOrAddTexture(std::string texture);
+
         int mapVersion = STANDARD_VERSION;
         std::string mapVersionStr = "100";
         QBrushEntity *worldSpawn;
         std::vector<QBrushEntity *> brushEntities;
         std::vector<QPointEntity *> pointEntities;
-        std::map<std::string, bool> textures;
+        std::vector<std::string> textures;
         friend class QMap;
     };
 }
