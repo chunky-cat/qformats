@@ -6,7 +6,7 @@
 #include <regex>
 
 #include <glm/glm.hpp>
-#include "../../include/qformats/map/map_file.h"
+#include "qformats/map/map_file.h"
 
 namespace qformats::map
 {

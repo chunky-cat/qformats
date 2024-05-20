@@ -1,4 +1,4 @@
-#include "../../include/qformats/wad/palette.h"
+#include "qformats/wad/palette.h"
 
 #include <fstream>
 #include <iterator>

@@ -1,4 +1,4 @@
-#include "../../include/qformats/map/map.h"
+#include "qformats/map/map.h"
 #include "qmath.h"
 #include <iostream>
 

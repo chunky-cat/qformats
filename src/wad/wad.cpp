@@ -1,4 +1,4 @@
-#include "../../include/qformats/wad/wad.h"
+#include "qformats/wad/wad.h"
 
 #include <fstream>
 #include <iterator>

@@ -1,4 +1,4 @@
-#include "../../include/qformats/map/brush.h"
+#include "qformats/map/brush.h"
 #include "qmath.h"
 
 namespace qformats::map

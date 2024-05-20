@@ -1,4 +1,4 @@
-#include "../../include/qformats/textureman.h"
+#include "qformats/textureman.h"
 #include <iostream>
 
 namespace qformats::textures

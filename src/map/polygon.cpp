@@ -1,4 +1,4 @@
-#include "../../include/qformats/map/polygon.h"
+#include "qformats/map/polygon.h"
 
 namespace qformats::map
 {
