@@ -20,15 +20,12 @@ namespace qformats::map
     public:
         Polygon(){};
         Polygon::eCP ClassifyPoly(const Polygon *other);
-        bool CalculatePlane();
-        std::pair<std::shared_ptr<Polygon>, std::shared_ptr<Polygon>> SplitPoly(Polygon *other);
         std::shared_ptr<Polygon> Copy();
 
         MapFileFace faceRef;
         std::vector<Vertex> vertices;
         std::vector<ushort> indices;
         glm::vec3 center;
-        Plane plane;
         const bool operator==(const Polygon &arg_) const;
 
     private:

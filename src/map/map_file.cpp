@@ -6,7 +6,7 @@
 #include <regex>
 
 #include <glm/glm.hpp>
-#include "map_file.h"
+#include "../../include/qformats/map/map_file.h"
 
 namespace qformats::map
 {
@@ -97,12 +97,27 @@ namespace qformats::map
         }
     }
 
+    void QMapFile::parse_wad_string(const std::string &wstr)
+    {
+        std::istringstream ss(wstr);
+
+        for (std::string item; std::getline(ss, item, ';');)
+        {
+            wads.push_back(item.substr(item.find_last_of("/\\") + 1));
+        }
+    }
+
     void QMapFile::parse_entity_attributes(std::string l, QEntity *ent)
     {
         auto matches = rexec_vec(l, R"(\"([\s\S]*?)\")");
         if (matches[0] == "mapversion")
         {
             mapVersion = stoi(matches[1]);
+            return;
+        }
+        if (matches[0] == "wad")
+        {
+            parse_wad_string(matches[1]);
             return;
         }
         if (matches[0] == "classname")

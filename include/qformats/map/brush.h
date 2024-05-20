@@ -16,8 +16,6 @@ namespace qformats::map
     public:
         Brush(){};
         const bool DoesIntersect(Brush &other);
-        std::vector<PolygonPtr> ClipToList(PolygonIter it, PolygonPtr other, bool clipToPlane);
-        std::vector<PolygonPtr> ClipBrush(Brush &otherBrush, bool clipOnPlane);
         std::vector<PolygonPtr> polygons;
 
     private:
@@ -36,7 +34,7 @@ namespace qformats::map
         glm::vec4 calcValveTangent(const MapFileFace &face);
         glm::vec2 calcStandardUV(glm::vec3 vertex, const MapFileFace &face, int texW, int texH);
         glm::vec2 calcValveUV(glm::vec3 vertex, const MapFileFace &face, int texW, int texH);
-        void mergeDuplicate(int from, Vertex &v);
+        Vertex mergeDuplicate(int from, Vertex &v);
         boolRet<Vertex> intersectPlanes(const MapFileFace &a, const MapFileFace &b, const MapFileFace &c);
 
         friend class QMap;

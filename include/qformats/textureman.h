@@ -53,6 +53,8 @@ namespace qformats::textures
         int GetOrAddTexture(string name);
         void OnTextureRequested(textureRequestCb);
         ITexture *GetTexture(int texID);
+        int GetTextureID(std::string name);
+
         const std::vector<ITexture *> &GetTextures() { return textures; }
 
     private:

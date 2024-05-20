@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <cmath>
-#include "types.h"
+#include "../../include/qformats/map/types.h"
 
 using glm::vec2, glm::vec3, glm::vec4, glm::dvec3;
 

@@ -1,4 +1,4 @@
-#include "brush.h"
+#include "../../include/qformats/map/brush.h"
 #include "qmath.h"
 
 namespace qformats::map
@@ -25,12 +25,11 @@ namespace qformats::map
 
         Vertex v = {};
         v.point = (glm::cross(n1, n2) * a.planeDist + glm::cross(n2, n0) * b.planeDist + glm::cross(n0, n1) * c.planeDist) / denom;
-        v.normal = a.planeNormal;
 
         return boolRet<Vertex>(true, v);
     }
 
-    void Brush::mergeDuplicate(int from, Vertex &v)
+    Vertex Brush::mergeDuplicate(int from, Vertex &v)
     {
         for (int n = 0; n <= from; n++)
         {
@@ -39,11 +38,11 @@ namespace qformats::map
             {
                 if (glm::distance(otherPoly->vertices[i].point, v.point) < CMP_EPSILON)
                 {
-                    v = otherPoly->vertices[i];
-                    return;
+                    return otherPoly->vertices[i];
                 }
             }
         }
+        return v;
     }
 
     void Brush::indexFaceVertices()
@@ -103,8 +102,20 @@ namespace qformats::map
                                 return 0;
                             }
                             return a_angle > b_angle ? 0 : 1; });
-            p->CalculatePlane();
         }
+    }
+
+    glm::vec3 GetUnitNormal(const glm::vec2 &p1, const glm::vec2 &p2, const float s)
+    {
+        const glm::vec2 p3 = p1 + ((p2 - p1) * s);
+        const float m = (p3.y - p1.y) / (p3.x - p1.x);
+        const float c = p1.y - m * p1.x;
+        const float y = (m * p1.x) + c;
+
+        const glm::vec2 tangent = glm::normalize(glm::vec2(p1.x, y));
+        glm::vec3 normal = glm::vec3(-tangent.y, 0, tangent.x);
+
+        return glm::normalize(normal);
     }
 
     void Brush::generatePolygons()
@@ -114,6 +125,8 @@ namespace qformats::map
         {
             p = std::make_shared<Polygon>();
         }
+        float phongAngle = 89.0;
+
         for (int i = 0; i < faces.size(); i++)
         {
             for (int j = 0; j < faces.size(); j++)
@@ -126,11 +139,15 @@ namespace qformats::map
                     if (!res.first || !res.second.checkLegalVertext(faces))
                         continue;
 
+                    res.second = mergeDuplicate(i, res.second);
+
                     auto v = res.second;
+                    v.normal = faces[i].planeNormal;
+                    v.normal = glm::normalize(v.normal);
+
                     polygons[k]->faceRef = faces[k];
                     v.tangent = QMath::CalcTangent(hasValveUV, polygons[k]->faceRef);
 
-                    mergeDuplicate(i, v);
                     if (v.inList(polygons[k]->vertices))
                         continue;
                     polygons[k]->vertices.push_back(v);

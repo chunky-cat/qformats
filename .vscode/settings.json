@@ -62,6 +62,7 @@
         "queue": "cpp",
         "span": "cpp",
         "stack": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "condition_variable": "cpp"
     }
 }

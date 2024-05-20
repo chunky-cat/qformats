@@ -32,6 +32,7 @@ namespace qformats::map
     private:
         void parse_entity_attributes(std::string l, QEntity *ent);
         void parse_entity_planes(std::stringstream &lines, QBrushEntity *ent);
+        void parse_wad_string(const std::string &wads);
 
     private:
         int getOrAddTexture(std::string texture);
@@ -42,6 +43,7 @@ namespace qformats::map
         std::vector<QBrushEntity *> brushEntities;
         std::vector<QPointEntity *> pointEntities;
         std::vector<std::string> textures;
+        std::vector<std::string> wads;
         friend class QMap;
     };
 }

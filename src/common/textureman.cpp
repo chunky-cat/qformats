@@ -1,4 +1,4 @@
-#include "textureman.h"
+#include "../../include/qformats/textureman.h"
 #include <iostream>
 
 namespace qformats::textures
@@ -28,6 +28,18 @@ namespace qformats::textures
             return nullptr;
 
         return textures[texID];
+    }
+
+    int TextureMan::GetTextureID(std::string name)
+    {
+        for (int i = 0; i < textures.size(); i++)
+        {
+            if (name == textures[i]->name)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     void TextureMan::OnTextureRequested(textureRequestCb cb)
