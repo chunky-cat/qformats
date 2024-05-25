@@ -20,6 +20,7 @@ namespace qformats::map
     public:
         Polygon(){};
         Polygon::eCP ClassifyPoly(const Polygon *other);
+        void RecalcNormals();
         std::shared_ptr<Polygon> Copy();
 
         MapFileFace faceRef;

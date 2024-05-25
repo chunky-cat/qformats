@@ -60,6 +60,7 @@ namespace qformats::map
                 p->indices.push_back(i + 1);
                 p->indices.push_back(i + 2);
             }
+            p->RecalcNormals();
         }
     }
 

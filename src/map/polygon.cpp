@@ -14,6 +14,26 @@ namespace qformats::map
         return newp;
     }
 
+    void Polygon::RecalcNormals()
+    {
+
+        for (int i = 0; i < indices.size(); i += 3)
+        {
+            // get the three vertices that make the faces
+            const auto &p1 = vertices[indices[i + 0]].point;
+            const auto &p2 = vertices[indices[i + 1]].point;
+            const auto &p3 = vertices[indices[i + 2]].point;
+
+            auto v1 = p2 - p1;
+            auto v2 = p3 - p1;
+            auto normal = glm::normalize(glm::cross(v1, v2));
+
+            vertices[indices[i + 0]].normal = normal;
+            vertices[indices[i + 1]].normal = normal;
+            vertices[indices[i + 2]].normal = normal;
+        }
+    }
+
     const bool Polygon::operator==(const Polygon &other) const
     {
 
