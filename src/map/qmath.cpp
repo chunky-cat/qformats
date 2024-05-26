@@ -63,8 +63,10 @@ namespace qformats::map
         else if (df >= du && df >= dr)
             uvOut = glm::vec2(vertex.y, -vertex.z);
 
-        float angle = glm::degrees(face.rotation);
-        uvOut = glm::vec2(uvOut.x * cos(angle) - sin(angle), uvOut.x * sin(angle) + cos(angle));
+        float angle = glm::radians(face.rotation);
+        uvOut = glm::vec2(
+            uvOut.x * cos(angle) - uvOut.y * sin(angle),
+            uvOut.x * sin(angle) + uvOut.y * cos(angle));
 
         uvOut.x /= texW;
         uvOut.y /= texH;
