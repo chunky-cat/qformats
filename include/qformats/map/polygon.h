@@ -26,7 +26,7 @@ namespace qformats::map
         MapFileFace faceRef;
         std::vector<Vertex> vertices;
         std::vector<ushort> indices;
-        glm::vec3 center;
+        fvec3 center;
         const bool operator==(const Polygon &arg_) const;
 
     private:

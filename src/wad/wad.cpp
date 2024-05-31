@@ -54,7 +54,7 @@ namespace qformats::wad
             istream.read((char *)&qwe.texture.width, sizeof(uint32_t));
             istream.read((char *)&qwe.texture.height, sizeof(uint32_t));
             istream.read((char *)&qwe.texture.mipOffsets, sizeof(uint32_t) * MAX_MIP_LEVELS);
-            std::vector<uint8_t> buff(qwe.texture.height * qwe.texture.height);
+            std::vector<uint8_t> buff(qwe.texture.width * qwe.texture.height);
             istream.read((char *)buff.data(), buff.size());
             fillTextureData(buff, qwe.texture);
         }

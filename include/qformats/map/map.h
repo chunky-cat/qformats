@@ -7,7 +7,6 @@
 #include <vector>
 #include <functional>
 
-#include <glm/glm.hpp>
 #include "types.h"
 #include "map_file.h"
 #include "brush.h"

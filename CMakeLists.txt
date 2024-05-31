@@ -8,7 +8,6 @@ project(
     LANGUAGES CXX
 )
 
-add_subdirectory(thirdparty)
 add_subdirectory(src)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

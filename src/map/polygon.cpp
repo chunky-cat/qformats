@@ -26,7 +26,7 @@ namespace qformats::map
 
             auto v1 = p2 - p1;
             auto v2 = p3 - p1;
-            auto normal = glm::normalize(glm::cross(v1, v2));
+            auto normal = normalize(cross(v1, v2));
 
             vertices[indices[i + 0]].normal = normal;
             vertices[indices[i + 1]].normal = normal;
@@ -63,7 +63,7 @@ namespace qformats::map
         bool bFront = false, bBack = false;
         for (int i = 0; i < (int)other->vertices.size(); i++)
         {
-            double dist = glm::dot(faceRef.planeNormal, other->vertices[i].point) + faceRef.planeDist;
+            double dist = dot(faceRef.planeNormal, other->vertices[i].point) + faceRef.planeDist;
             if (dist > 0.001)
             {
                 if (bBack)

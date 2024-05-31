@@ -15,16 +15,16 @@ namespace qformats::map
 
     boolRet<Vertex> Brush::intersectPlanes(const MapFileFace &a, const MapFileFace &b, const MapFileFace &c)
     {
-        glm::vec3 n0 = a.planeNormal;
-        glm::vec3 n1 = b.planeNormal;
-        glm::vec3 n2 = c.planeNormal;
+        fvec3 n0 = a.planeNormal;
+        fvec3 n1 = b.planeNormal;
+        fvec3 n2 = c.planeNormal;
 
-        float denom = glm::dot(glm::cross(n0, n1), n2);
+        float denom = dot(cross(n0, n1), n2);
         if (denom < CMP_EPSILON)
             return boolRet<Vertex>(false, fv3zero);
 
         Vertex v = {};
-        v.point = (glm::cross(n1, n2) * a.planeDist + glm::cross(n2, n0) * b.planeDist + glm::cross(n0, n1) * c.planeDist) / denom;
+        v.point = (cross(n1, n2) * a.planeDist + cross(n2, n0) * b.planeDist + cross(n0, n1) * c.planeDist) / denom;
 
         return boolRet<Vertex>(true, v);
     }
@@ -36,7 +36,7 @@ namespace qformats::map
             auto otherPoly = polygons[n];
             for (int i = 0; i < otherPoly->vertices.size(); i++)
             {
-                if (glm::distance(otherPoly->vertices[i].point, v.point) < CMP_EPSILON)
+                if (dist3(otherPoly->vertices[i].point, v.point) < CMP_EPSILON)
                 {
                     return otherPoly->vertices[i];
                 }
@@ -72,9 +72,9 @@ namespace qformats::map
             if (p->vertices.size() < 3)
                 continue;
 
-            auto windFaceBasis = glm::normalize(p->vertices[1].point - p->vertices[0].point);
-            auto windFaceCenter = glm::dvec3();
-            auto windFaceNormal = glm::normalize(p->faceRef.planeNormal);
+            auto windFaceBasis = normalize(p->vertices[1].point - p->vertices[0].point);
+            auto windFaceCenter = fvec3();
+            auto windFaceNormal = normalize(p->faceRef.planeNormal);
 
             for (auto v : p->vertices)
             {
@@ -85,16 +85,16 @@ namespace qformats::map
             std::stable_sort(p->vertices.begin(), p->vertices.end(), [&](Vertex l, Vertex r)
                              {
 
-                            glm::dvec3 u = glm::normalize(windFaceBasis);
-                            glm::dvec3 v = glm::normalize(glm::cross(u, windFaceNormal));
+                            fvec3 u = normalize(windFaceBasis);
+                            fvec3 v = normalize(cross(u, windFaceNormal));
 
-                            glm::dvec3 loc_a = l.point - windFaceCenter;
-                            float a_pu = glm::dot(loc_a, u);
-                            float a_pv = glm::dot(loc_a, v);
+                            fvec3 loc_a = l.point - windFaceCenter;
+                            float a_pu = dot(loc_a, u);
+                            float a_pv = dot(loc_a, v);
 
-                            glm::dvec3 loc_b = r.point - windFaceCenter;
-                            float b_pu = glm::dot(loc_b, u);
-                            float b_pv = glm::dot(loc_b, v);
+                            fvec3 loc_b = r.point - windFaceCenter;
+                            float b_pu = dot(loc_b, u);
+                            float b_pv = dot(loc_b, v);
 
                             float a_angle = atan2(a_pv, a_pu);
                             float b_angle = atan2(b_pv, b_pu);
@@ -106,17 +106,18 @@ namespace qformats::map
         }
     }
 
-    glm::vec3 GetUnitNormal(const glm::vec2 &p1, const glm::vec2 &p2, const float s)
+    fvec3 GetUnitNormal(const fvec2 p1, const fvec2 p2, const float s)
     {
-        const glm::vec2 p3 = p1 + ((p2 - p1) * s);
-        const float m = (p3.y - p1.y) / (p3.x - p1.x);
-        const float c = p1.y - m * p1.x;
-        const float y = (m * p1.x) + c;
+        const fvec2 p3 = p1 + ((p2 - p1) * s);
 
-        const glm::vec2 tangent = glm::normalize(glm::vec2(p1.x, y));
-        glm::vec3 normal = glm::vec3(-tangent.y, 0, tangent.x);
+        const float m = (p3[1] - p1[1]) / (p3[0] - p1[0]);
+        const float c = p1[1] - m * p1[0];
+        const float y = (m * p1[0]) + c;
 
-        return glm::normalize(normal);
+        const fvec2 tangent = normalize(fvec2(p1[0], p2[1]));
+        fvec3 normal = fvec3(-tangent[1], 0, tangent[0]);
+
+        return normalize(normal);
     }
 
     void Brush::generatePolygons()
@@ -144,7 +145,7 @@ namespace qformats::map
 
                     auto v = res.second;
                     v.normal = faces[i].planeNormal;
-                    v.normal = glm::normalize(v.normal);
+                    v.normal = normalize(v.normal);
 
                     polygons[k]->faceRef = faces[k];
                     v.tangent = QMath::CalcTangent(hasValveUV, polygons[k]->faceRef);
@@ -158,13 +159,13 @@ namespace qformats::map
 
     const bool Brush::DoesIntersect(Brush &other)
     {
-        if ((min.x > other.max.x) || (other.min.x > max.x))
+        if ((min[0] > other.max[0]) || (other.min[0] > max[0]))
             return false;
 
-        if ((min.y > other.max.y) || (other.min.y > max.y))
+        if ((min[1] > other.max[1]) || (other.min[1] > max[1]))
             return false;
 
-        if ((min.z > other.max.z) || (other.min.z > max.z))
+        if ((min[2] > other.max[2]) || (other.min[2] > max[2]))
             return false;
 
         return true;
@@ -178,23 +179,23 @@ namespace qformats::map
         for (const auto &face : polygons)
             for (const auto &vert : face->vertices)
             {
-                if (vert.point.x < min.x)
-                    min.x = vert.point.x;
+                if (vert.point[0] < min[0])
+                    min[0] = vert.point[0];
 
-                if (vert.point.y < min.y)
-                    min.y = vert.point.y;
+                if (vert.point[1] < min[1])
+                    min[1] = vert.point[1];
 
-                if (vert.point.z < min.z)
-                    min.z = vert.point.z;
+                if (vert.point[2] < min[2])
+                    min[2] = vert.point[2];
 
-                if (vert.point.x > max.x)
-                    max.x = vert.point.x;
+                if (vert.point[0] > max[0])
+                    max[0] = vert.point[0];
 
-                if (vert.point.y > max.y)
-                    max.y = vert.point.y;
+                if (vert.point[1] > max[1])
+                    max[1] = vert.point[1];
 
-                if (vert.point.z > max.z)
-                    max.z = vert.point.z;
+                if (vert.point[2] > max[2])
+                    max[2] = vert.point[2];
             }
     }
 }

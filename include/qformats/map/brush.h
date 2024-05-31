@@ -22,18 +22,18 @@ namespace qformats::map
         std::vector<MapFileFace> faces;
         bool hasValveUV;
 
-        glm::dvec3 min;
-        glm::dvec3 max;
+        fvec3 min;
+        fvec3 max;
 
         void generatePolygons();
         void windFaceVertices();
         void indexFaceVertices();
         void calculateAABB();
         void buildGeometry();
-        glm::vec4 calcStandardTangent(const MapFileFace &face);
-        glm::vec4 calcValveTangent(const MapFileFace &face);
-        glm::vec2 calcStandardUV(glm::vec3 vertex, const MapFileFace &face, int texW, int texH);
-        glm::vec2 calcValveUV(glm::vec3 vertex, const MapFileFace &face, int texW, int texH);
+        fvec4 calcStandardTangent(const MapFileFace &face);
+        fvec4 calcValveTangent(const MapFileFace &face);
+        fvec2 calcStandardUV(fvec3 vertex, const MapFileFace &face, int texW, int texH);
+        fvec2 calcValveUV(fvec3 vertex, const MapFileFace &face, int texW, int texH);
         Vertex mergeDuplicate(int from, Vertex &v);
         boolRet<Vertex> intersectPlanes(const MapFileFace &a, const MapFileFace &b, const MapFileFace &c);
 

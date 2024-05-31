@@ -1,22 +1,19 @@
 #include "qmath.h"
-// TODO: remove dependency
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/rotate_vector.hpp>
 #include <iostream>
 
 namespace qformats::map
 {
 
-    glm::vec4 QMath::calcStandardTangent(const MapFileFace &face)
+    fvec4 QMath::calcStandardTangent(const MapFileFace &face)
     {
-        float du = glm::dot(face.planeNormal, UP_VEC);
-        float dr = glm::dot(face.planeNormal, RIGHT_VEC);
-        float df = glm::dot(face.planeNormal, FORWARD_VEC);
+        float du = dot(face.planeNormal, UP_VEC);
+        float dr = dot(face.planeNormal, RIGHT_VEC);
+        float df = dot(face.planeNormal, FORWARD_VEC);
         float dua = abs(du);
         float dra = abs(dr);
         float dfa = abs(df);
 
-        glm::vec3 uAxis{0};
+        fvec3 uAxis{0};
         float vSign = 0.0f;
 
         if (dua >= dra && dua >= dfa)
@@ -36,68 +33,68 @@ namespace qformats::map
         }
 
         vSign *= copysignf(1.0, face.scaleY);
-        uAxis = glm::rotate(uAxis, (float)glm::degrees(-face.rotation * vSign), (glm::vec3)face.planeNormal);
-        return glm::vec4(uAxis.x, uAxis.y, uAxis.z, vSign);
+        uAxis = tue::transform::rotation_vec(uAxis, (float)((-face.rotation * vSign) * (180.0 / 3.141592653589793238463)));
+        return fvec4(uAxis[0], uAxis[1], uAxis[2], vSign);
     }
 
-    glm::vec4 QMath::calcValveTangent(const MapFileFace &face)
+    fvec4 QMath::calcValveTangent(const MapFileFace &face)
     {
-        glm::vec3 uAxis = glm::normalize(face.valveUV.u);
-        glm::vec3 vAxis = glm::normalize(face.valveUV.v);
-        float vSign = copysignf(1.0, glm::dot(glm::cross((glm::vec3)face.planeNormal, uAxis), vAxis));
-        return glm::vec4(uAxis.x, uAxis.y, uAxis.z, vSign);
+        fvec3 uAxis = normalize(face.valveUV.u.xyz());
+        fvec3 vAxis = normalize(face.valveUV.v.xyz());
+        float vSign = copysignf(1.0, dot(cross((fvec3)face.planeNormal, uAxis), vAxis));
+        return fvec4(uAxis[0], uAxis[1], uAxis[2], vSign);
     }
 
-    glm::vec2 QMath::calcStandardUV(glm::vec3 vertex, const MapFileFace &face, int texW, int texH)
+    fvec2 QMath::calcStandardUV(fvec3 vertex, const MapFileFace &face, int texW, int texH)
     {
-        glm::vec2 uvOut{0};
+        fvec2 uvOut{0};
 
-        float du = abs(glm::dot(face.planeNormal, UP_VEC));
-        float dr = abs(glm::dot(face.planeNormal, RIGHT_VEC));
-        float df = abs(glm::dot(face.planeNormal, FORWARD_VEC));
+        float du = abs(dot(face.planeNormal, UP_VEC));
+        float dr = abs(dot(face.planeNormal, RIGHT_VEC));
+        float df = abs(dot(face.planeNormal, FORWARD_VEC));
 
         if (du >= dr && du >= df)
-            uvOut = glm::vec2(vertex.x, -vertex.y);
+            uvOut = fvec2(vertex[0], -vertex[1]);
         else if (dr >= du && dr >= df)
-            uvOut = glm::vec2(vertex.x, -vertex.z);
+            uvOut = fvec2(vertex[0], -vertex[2]);
         else if (df >= du && df >= dr)
-            uvOut = glm::vec2(vertex.y, -vertex.z);
+            uvOut = fvec2(vertex[1], -vertex[2]);
 
-        float angle = glm::radians(face.rotation);
-        uvOut = glm::vec2(
-            uvOut.x * cos(angle) - uvOut.y * sin(angle),
-            uvOut.x * sin(angle) + uvOut.y * cos(angle));
+        float angle = face.rotation * (M_PI / 180);
+        uvOut = fvec2(
+            uvOut[0] * cos(angle) - uvOut[1] * sin(angle),
+            uvOut[0] * sin(angle) + uvOut[1] * cos(angle));
 
-        uvOut.x /= texW;
-        uvOut.y /= texH;
+        uvOut[0] /= texW;
+        uvOut[1] /= texH;
 
-        uvOut.x /= face.scaleX;
-        uvOut.y /= face.scaleY;
+        uvOut[0] /= face.scaleX;
+        uvOut[1] /= face.scaleY;
 
-        uvOut.x += face.standardUv.u / texW;
-        uvOut.y += face.standardUv.v / texH;
+        uvOut[0] += face.standardUv.u / texW;
+        uvOut[1] += face.standardUv.v / texH;
         return uvOut;
     }
 
-    glm::vec2 QMath::calcValveUV(glm::vec3 vertex, const MapFileFace &face, int texW, int texH)
+    fvec2 QMath::calcValveUV(fvec3 vertex, const MapFileFace &face, int texW, int texH)
     {
-        glm::vec2 uvOut{0};
-        glm::vec3 uAxis = face.valveUV.u;
-        glm::vec3 vAxis = face.valveUV.v;
+        fvec2 uvOut{0};
+        fvec3 uAxis = face.valveUV.u.xyz();
+        fvec3 vAxis = face.valveUV.v.xyz();
         float uShift = face.valveUV.u[3];
         float vShift = face.valveUV.v[3];
 
-        uvOut.x = glm::dot(uAxis, vertex);
-        uvOut.y = glm::dot(vAxis, vertex);
+        uvOut[0] = dot(uAxis, vertex);
+        uvOut[1] = dot(vAxis, vertex);
 
-        uvOut.x /= texW;
-        uvOut.y /= texH;
+        uvOut[0] /= texW;
+        uvOut[1] /= texH;
 
-        uvOut.x /= face.scaleX;
-        uvOut.y /= face.scaleY;
+        uvOut[0] /= face.scaleX;
+        uvOut[1] /= face.scaleY;
 
-        uvOut.x += uShift / texW;
-        uvOut.y += vShift / texH;
+        uvOut[0] += uShift / texW;
+        uvOut[1] += vShift / texH;
 
         return uvOut;
     }

@@ -3,7 +3,23 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <glm/glm.hpp>
+#include <tue/vec.hpp>
+#include <tue/math.hpp>
+#include <tue/transform.hpp>
+
+using tue::fvec2;
+using tue::fvec3;
+using tue::fvec4;
+
+using tue::math::cross;
+using tue::math::dot;
+using tue::math::normalize;
+
+inline float dist3(const fvec3 &a, const fvec3 &b)
+{
+    fvec3 diff = b - a;
+    return sqrtf(dot(diff, diff));
+};
 
 namespace qformats::map
 {
@@ -19,14 +35,14 @@ namespace qformats::map
 
     struct QPointEntity : QEntity
     {
-        glm::vec3 origin;
+        fvec3 origin;
     };
 
     struct MapFileFace
     {
         MapFileFace() = default;
-        std::array<glm::dvec3, 3> planePoints;
-        glm::dvec3 planeNormal;
+        std::array<fvec3, 3> planePoints;
+        fvec3 planeNormal;
         float planeDist;
         struct StandardUV
         {
@@ -36,8 +52,8 @@ namespace qformats::map
         StandardUV standardUv;
         struct ValveUV
         {
-            glm::dvec4 u;
-            glm::dvec4 v;
+            fvec4 u;
+            fvec4 v;
         };
         ValveUV valveUV;
         double rotation;
@@ -49,16 +65,17 @@ namespace qformats::map
     // GEOMETRY
     struct Vertex
     {
-        glm::dvec3 point;
-        glm::dvec3 normal;
-        glm::vec2 uv;
-        glm::vec4 tangent;
+        fvec3 point;
+        fvec3 normal;
+        fvec2 uv;
+        fvec4 tangent;
 
         inline bool checkLegalVertext(const std::vector<MapFileFace> &faces)
         {
             for (auto f : faces)
             {
-                auto proj = glm::dot(f.planeNormal, point);
+
+                auto proj = tue::math::dot(f.planeNormal, point);
                 if (proj > f.planeDist && abs(f.planeDist - proj) > 0.0008)
                     return false;
             }

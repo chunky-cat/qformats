@@ -59,6 +59,7 @@ namespace qformats::wad
         static qwad_ptr FromFile(const std::string &fileName, QuakeWadOptions opts = QuakeWadOptions());
         ~QuakeWad();
         QuakeTexture *GetTexture(const std::string &textureName);
+        const std::map<std::string, QuakeWadEntry> &Textures() { return entries; };
         void Pal(Palette pal) { this->pal = pal; };
         const Palette &Pal() { return pal; };
 

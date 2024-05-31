@@ -5,7 +5,6 @@
 #include <iostream>
 #include <regex>
 
-#include <glm/glm.hpp>
 #include "qformats/map/map_file.h"
 
 namespace qformats::map
@@ -133,7 +132,7 @@ namespace qformats::map
         {
             std::stringstream stream(matches[1]);
             auto pent = reinterpret_cast<QPointEntity *>(ent);
-            stream >> pent->origin.x >> pent->origin.y >> pent->origin.z;
+            stream >> pent->origin[0] >> pent->origin[1] >> pent->origin[2];
             return;
         }
         if (matches[0] == "_tb_name")
@@ -170,16 +169,16 @@ namespace qformats::map
             }
 
             std::stringstream l(line);
-            l >> face.planePoints[0].x >> face.planePoints[0].y >> face.planePoints[0].z;
-            l >> face.planePoints[1].x >> face.planePoints[1].y >> face.planePoints[1].z;
-            l >> face.planePoints[2].x >> face.planePoints[2].y >> face.planePoints[2].z;
+            l >> face.planePoints[0][0] >> face.planePoints[0][1] >> face.planePoints[0][2];
+            l >> face.planePoints[1][0] >> face.planePoints[1][1] >> face.planePoints[1][2];
+            l >> face.planePoints[2][0] >> face.planePoints[2][1] >> face.planePoints[2][2];
             std::string texture;
             l >> texture;
             switch (mapVersion)
             {
             case VALVE_VERSION:
-                l >> face.valveUV.u.x >> face.valveUV.u.y >> face.valveUV.u.z >> face.valveUV.u.w;
-                l >> face.valveUV.v.x >> face.valveUV.v.y >> face.valveUV.v.z >> face.valveUV.v.w;
+                l >> face.valveUV.u[0] >> face.valveUV.u[1] >> face.valveUV.u[2] >> face.valveUV.u[3];
+                l >> face.valveUV.v[0] >> face.valveUV.v[1] >> face.valveUV.v[2] >> face.valveUV.v[3];
                 break;
             default:
                 l >> face.standardUv.u >> face.standardUv.v;
@@ -187,10 +186,10 @@ namespace qformats::map
             }
             l >> face.rotation >> face.scaleX >> face.scaleY;
 
-            glm::dvec3 v0v1 = face.planePoints[1] - face.planePoints[0];
-            glm::dvec3 v1v2 = face.planePoints[2] - face.planePoints[1];
-            face.planeNormal = glm::normalize(glm::cross(v1v2, v0v1));
-            face.planeDist = glm::dot(face.planeNormal, face.planePoints[0]);
+            fvec3 v0v1 = face.planePoints[1] - face.planePoints[0];
+            fvec3 v1v2 = face.planePoints[2] - face.planePoints[1];
+            face.planeNormal = normalize(cross(v1v2, v0v1));
+            face.planeDist = dot(face.planeNormal, face.planePoints[0]);
             brush.hasValveUV = mapVersion == VALVE_VERSION;
             face.textureID = getOrAddTexture(texture);
             brush.faces.push_back(face);
