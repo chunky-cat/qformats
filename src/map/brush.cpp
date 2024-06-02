@@ -5,9 +5,9 @@ namespace qformats::map
 {
     const auto fv3zero = Vertex();
 
-    void Brush::buildGeometry()
+    void Brush::buildGeometry(const std::map<int, bool> &excludedTextureIDs)
     {
-        generatePolygons();
+        generatePolygons(excludedTextureIDs);
         windFaceVertices();
         indexFaceVertices();
         calculateAABB();
@@ -120,7 +120,7 @@ namespace qformats::map
         return normalize(normal);
     }
 
-    void Brush::generatePolygons()
+    void Brush::generatePolygons(const std::map<int, bool> &excludedTextureIDs)
     {
         this->polygons.resize(faces.size());
         for (auto &p : this->polygons)
@@ -135,6 +135,9 @@ namespace qformats::map
                 for (int k = 0; k < faces.size(); k++)
                 {
                     if (i == j && i == k && j == k)
+                        continue;
+
+                    if (excludedTextureIDs.count(faces[i].textureID))
                         continue;
 
                     auto res = intersectPlanes(faces[i], faces[j], faces[k]);
@@ -173,6 +176,9 @@ namespace qformats::map
 
     void Brush::calculateAABB()
     {
+        if (polygons[0]->vertices.size() == 0)
+            return;
+
         min = polygons[0]->vertices[0].point;
         max = polygons[0]->vertices[0].point;
 

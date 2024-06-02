@@ -30,6 +30,7 @@ namespace qformats::map
     struct QEntity
     {
         std::string classname;
+        float angle;
         std::map<std::string, std::string> attributes;
     };
 

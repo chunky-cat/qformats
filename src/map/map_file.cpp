@@ -135,6 +135,12 @@ namespace qformats::map
             stream >> pent->origin[0] >> pent->origin[1] >> pent->origin[2];
             return;
         }
+        if (matches[0] == "angle")
+        {
+            std::stringstream stream(matches[1]);
+            stream >> ent->angle;
+            return;
+        }
         if (matches[0] == "_tb_name")
         {
             auto bent = reinterpret_cast<QBrushEntity *>(ent);

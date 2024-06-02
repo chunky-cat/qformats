@@ -25,11 +25,11 @@ namespace qformats::map
         fvec3 min;
         fvec3 max;
 
-        void generatePolygons();
+        void buildGeometry(const std::map<int, bool> &excludedTextureIDs);
+        void generatePolygons(const std::map<int, bool> &excludedTextureIDs);
         void windFaceVertices();
         void indexFaceVertices();
         void calculateAABB();
-        void buildGeometry();
         fvec4 calcStandardTangent(const MapFileFace &face);
         fvec4 calcValveTangent(const MapFileFace &face);
         fvec2 calcStandardUV(fvec3 vertex, const MapFileFace &face, int texW, int texH);

@@ -19,7 +19,7 @@ namespace qformats::map
             se.entityRef = e;
             for (auto &b : e->brushes)
             {
-                b.buildGeometry();
+                b.buildGeometry(excludedTextureIDs);
                 se.geoBrushes.push_back(b);
             }
             solidEntities.push_back(se);
@@ -52,6 +52,31 @@ namespace qformats::map
                     }
                 }
             }
+    }
+
+    void QMap::ExcludeTextureSurface(std::string texName)
+    {
+        for (int i = 0; i < map_file->textures.size(); i++)
+        {
+            if (map_file->textures[i].find(texName) != std::string::npos)
+            {
+                excludedTextureIDs[i] = true;
+                return;
+            }
+        }
+    }
+
+    std::vector<QPointEntity *> QMap::GetPointEntitiesByClass(const std::string &className)
+    {
+        std::vector<QPointEntity *> ents;
+        for (auto pe : map_file->pointEntities)
+        {
+            if (pe->classname.find(className) != std::string::npos)
+            {
+                ents.push_back(pe);
+            }
+        }
+        return ents;
     }
 
     bool QMap::getPolygonsByTextureID(int entityID, int texID, std::vector<PolygonPtr> &list)
