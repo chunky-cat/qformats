@@ -1,3 +1,5 @@
+#include "qformats/map/map_file.h"
+
 #include <fstream>
 #include <vector>
 #include <string>
@@ -5,7 +7,6 @@
 #include <iostream>
 #include <regex>
 
-#include "qformats/map/map_file.h"
 
 namespace qformats::map
 {

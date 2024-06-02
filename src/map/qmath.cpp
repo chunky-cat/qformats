@@ -1,5 +1,4 @@
 #include "qmath.h"
-#include <iostream>
 
 namespace qformats::map
 {

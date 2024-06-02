@@ -19,14 +19,14 @@ namespace qformats::wad
         if (std::string(magic) != "WAD2")
             throw std::runtime_error("WAD magic string malformed");
 
-        w->istream.read((char *)&w->numEntries, sizeof(uint32_t));
-        w->istream.read((char *)&w->dirOffset, sizeof(uint32_t));
+        w->istream.read(reinterpret_cast<char*>(&w->numEntries), sizeof(uint32_t));
+        w->istream.read(reinterpret_cast<char*>(&w->dirOffset), sizeof(uint32_t));
         w->istream.seekg(w->dirOffset, w->istream.beg);
 
-        for (int i = 0; i < w->numEntries; i++)
+        for (unsigned int i = 0; i < w->numEntries; i++)
         {
             auto we = QuakeWadEntry();
-            w->istream.read((char *)&we.header, sizeof(QuakeWadEntry::header));
+            w->istream.read(reinterpret_cast<char*>(&we.header), sizeof(QuakeWadEntry::header));
             char name[TEXTURE_NAME_LENGTH + 1] = {};
             w->istream.read(name, TEXTURE_NAME_LENGTH);
             we.name = std::string(name);

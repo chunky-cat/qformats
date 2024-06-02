@@ -10,7 +10,7 @@ namespace qformats::map
     template <class T>
     using boolRet = std::pair<bool, T>;
     using PolygonPtr = std::shared_ptr<Polygon>;
-    using PolygonIter = std::__1::vector<PolygonPtr>::iterator;
+    using PolygonIter = std::vector<PolygonPtr>::iterator;
     class Brush
     {
     public:

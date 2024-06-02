@@ -1,11 +1,12 @@
 #pragma once
 
+#include <tue/transform.hpp>
+
 #include <string>
 #include <vector>
+#include <array>
 #include <map>
 #include <tue/vec.hpp>
-#include <tue/math.hpp>
-#include <tue/transform.hpp>
 
 using tue::fvec2;
 using tue::fvec3;

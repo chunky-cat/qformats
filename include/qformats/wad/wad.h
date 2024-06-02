@@ -13,9 +13,9 @@ namespace qformats::wad
 
     struct QuakeTexture
     {
-        uint32_t width;
-        uint32_t height;
-        uint32_t mipOffsets[MAX_MIP_LEVELS];
+        unsigned int width;
+        unsigned int height;
+        unsigned int mipOffsets[MAX_MIP_LEVELS];
         cvec raw;
     };
 
@@ -30,12 +30,12 @@ namespace qformats::wad
         };
         struct header
         {
-            u_int32_t offset;
-            u_int32_t inWadSize;
-            u_int32_t size;
-            u_int8_t type;
-            u_int8_t compression;
-            u_int16_t unknown;
+            unsigned int offset;
+            unsigned int  inWadSize;
+            unsigned int  size;
+            unsigned char type;
+            unsigned char compression;
+            unsigned short unknown;
         } header;
         std::string name;
         QuakeTexture texture;
@@ -60,14 +60,14 @@ namespace qformats::wad
         ~QuakeWad();
         QuakeTexture *GetTexture(const std::string &textureName);
         const std::map<std::string, QuakeWadEntry> &Textures() { return entries; };
-        void Pal(Palette pal) { this->pal = pal; };
-        const Palette &Pal() { return pal; };
+        void SetPalette(const Palette& p) { this->pal = p; };
+        const Palette &GetPalette() { return pal; };
 
     private:
         void fillTextureData(const std::vector<uint8_t> buff, QuakeTexture &tex);
 
-        u_int32_t numEntries;
-        u_int32_t dirOffset;
+        unsigned int numEntries;
+        unsigned int dirOffset;
         Palette pal = default_palette;
         std::ifstream istream;
         std::map<std::string, QuakeWadEntry> entries;
