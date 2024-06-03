@@ -27,6 +27,7 @@ namespace qformats::map
         std::vector<Vertex> vertices;
         std::vector<unsigned short> indices;
         fvec3 center;
+        bool noDraw = false;
         const bool operator==(const Polygon &arg_) const;
 
     private:

@@ -137,8 +137,8 @@ namespace qformats::map
                     if (i == j && i == k && j == k)
                         continue;
 
-                    if (excludedTextureIDs.count(faces[i].textureID))
-                        continue;
+                    if (excludedTextureIDs.count(faces[k].textureID))
+                        polygons[k]->noDraw = true;
 
                     auto res = intersectPlanes(faces[i], faces[j], faces[k]);
                     if (!res.first || !res.second.checkLegalVertext(faces))

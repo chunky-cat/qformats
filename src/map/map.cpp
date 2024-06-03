@@ -40,6 +40,7 @@ namespace qformats::map
             {
                 for (auto p : b.polygons)
                 {
+                    if (p->vertices.size() == 0) continue;
                     auto tex = texMan.GetTexture(p->faceRef.textureID);
                     if (tex == nullptr)
                     {

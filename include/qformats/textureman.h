@@ -13,7 +13,7 @@ namespace qformats::textures
     {
     public:
         ITexture(){};
-        ITexture(string name, int width, int height) : width(width), height(height), name(name){};
+        ITexture(string name, int width, int height) : name(name), width(width), height(height){};
         ITexture(string name) : name(name){};
 
         void SetWidth(int w) { width = w; }
