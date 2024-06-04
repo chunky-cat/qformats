@@ -49,6 +49,7 @@ namespace qformats::map
         const std::vector<QPointEntity *> &GetPointEntities() { return map_file->pointEntities; };
 
         void ExcludeTextureSurface(std::string texture);
+        qformats::map::QPointEntity *GetPlayerStart();
         const std::vector<SolidEntity> &GetSolidEntities() { return solidEntities; };
         const std::vector<textures::ITexture *> GetTextures() { return texMan.GetTextures(); };
 

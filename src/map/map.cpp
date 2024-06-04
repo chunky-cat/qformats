@@ -40,7 +40,8 @@ namespace qformats::map
             {
                 for (auto p : b.polygons)
                 {
-                    if (p->vertices.size() == 0) continue;
+                    if (p->vertices.size() == 0)
+                        continue;
                     auto tex = texMan.GetTexture(p->faceRef.textureID);
                     if (tex == nullptr)
                     {
@@ -65,19 +66,6 @@ namespace qformats::map
                 return;
             }
         }
-    }
-
-    std::vector<QPointEntity *> QMap::GetPointEntitiesByClass(const std::string &className)
-    {
-        std::vector<QPointEntity *> ents;
-        for (auto pe : map_file->pointEntities)
-        {
-            if (pe->classname.find(className) != std::string::npos)
-            {
-                ents.push_back(pe);
-            }
-        }
-        return ents;
     }
 
     bool QMap::getPolygonsByTextureID(int entityID, int texID, std::vector<PolygonPtr> &list)
@@ -119,5 +107,18 @@ namespace qformats::map
                 cb(polyList, i);
             }
         }
+    }
+
+    std::vector<QPointEntity *> QMap::GetPointEntitiesByClass(const std::string &className)
+    {
+        std::vector<QPointEntity *> ents;
+        for (auto pe : map_file->pointEntities)
+        {
+            if (pe->classname.find(className) != std::string::npos)
+            {
+                ents.push_back(pe);
+            }
+        }
+        return ents;
     }
 }
