@@ -1,4 +1,4 @@
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} STATIC
     common/textureman.cpp    
     map/map_file.cpp
     map/map.cpp

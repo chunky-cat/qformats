@@ -48,6 +48,7 @@ namespace qformats::map
         std::vector<QPointEntity *> GetPointEntitiesByClass(const std::string &className);
         const std::vector<QPointEntity *> &GetPointEntities() { return map_file->pointEntities; };
 
+        void ConstructiveSolidGeometryUnion();
         void ExcludeTextureSurface(std::string texture);
         const std::vector<SolidEntity> &GetSolidEntities() { return solidEntities; };
         const std::vector<textures::ITexture *> GetTextures() { return texMan.GetTextures(); };

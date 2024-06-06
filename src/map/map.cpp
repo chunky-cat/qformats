@@ -1,5 +1,5 @@
 #include "qformats/map/map.h"
-#include "qmath.h"
+#include <qformats/map/qmath.h>
 #include <iostream>
 
 namespace qformats::map
@@ -23,6 +23,46 @@ namespace qformats::map
                 se.geoBrushes.push_back(b);
             }
             solidEntities.push_back(se);
+        }
+        ConstructiveSolidGeometryUnion();
+    }
+
+    void QMap::ConstructiveSolidGeometryUnion()
+    {
+        for (auto& se : solidEntities)
+        {
+            for (auto& b : se.geoBrushes)
+            {
+                std::cout << "-- BRUSH --" << std::endl;
+                for (auto &p : b.polygons)
+                {
+                    for (auto& v : p->vertices)
+                    {
+                        std::cout << v << std::endl;
+                    }
+                    std::cout << "--------" << std::endl;
+                }
+            }
+
+            auto clippedBrushes = se.geoBrushes;
+
+            for (size_t i = 0; i < se.geoBrushes.size(); i++)
+            {
+                for (size_t j = 0; j < se.geoBrushes.size(); j++)
+                {
+                    if (i == j)
+                    {
+                        std::cout << "SKIP Brush" << std::endl;
+                        continue;
+                    }
+
+                    if (clippedBrushes[i].DoesIntersect(se.geoBrushes[j]))
+                    {
+                        std::cout << "intersects" << std::endl;
+                        clippedBrushes[i].clipToBrush(se.geoBrushes[j]);
+                    }
+                }
+            }
         }
     }
 

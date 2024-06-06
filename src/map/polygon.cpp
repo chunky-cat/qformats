@@ -1,4 +1,5 @@
 #include "qformats/map/polygon.h"
+#include <iostream>
 
 namespace qformats::map
 {
@@ -63,21 +64,24 @@ namespace qformats::map
         bool bFront = false, bBack = false;
         for (int i = 0; i < (int)other->vertices.size(); i++)
         {
-            double dist = dot(faceRef.planeNormal, other->vertices[i].point) + faceRef.planeDist;
-            if (dist > 0.001)
+            double dist = dot(faceRef.planeNormal, other->vertices[i].point);
+            //proj > f.planeDist && abs(f.planeDist - proj) > 0.0008
+            if(dist > faceRef.planeDist && abs(faceRef.planeDist - dist) > 0.0008)
+            //if (dist > 0.001)
             {
                 if (bBack)
                 {
-                    return eCP::SPLIT;
+                    return eCP::SPANNING;
                 }
 
                 bFront = true;
             }
-            else if (dist < -0.001)
+            else if (dist < faceRef.planeDist&& abs(faceRef.planeDist + dist) < -0.0008)
+            //else if (dist < -0.001)
             {
                 if (bFront)
                 {
-                    return eCP::SPLIT;
+                    return eCP::SPANNING;
                 }
 
                 bBack = true;
@@ -94,5 +98,22 @@ namespace qformats::map
         }
 
         return eCP::ONPLANE;
+    }
+
+    PolygonPtr qformats::map::Polygon::ClipToList(PolygonIter& other, const PolygonIter& end)
+    {
+        auto ecp = ClassifyPoly(other->get());
+        std::cout << "ecp: " << ecp << std::endl;
+        switch (ecp)
+        {
+        case FRONT: // poligon is outside of brush
+            return *other;
+        case BACK:
+            if (other == end)
+            {
+                return nullptr; // polygon is inside of brush
+            }
+            return ClipToList(++other, end);
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include <array>
 #include <map>
 #include <tue/vec.hpp>
@@ -15,6 +16,12 @@ using tue::fvec4;
 using tue::math::cross;
 using tue::math::dot;
 using tue::math::normalize;
+
+static std::ostream& operator<<(std::ostream& stream, const fvec3& v)
+{
+    stream << "(" << v[0] << " " << v[1] << " " << v[2] << ")";
+    return stream;
+}
 
 inline float dist3(const fvec3 &a, const fvec3 &b)
 {
@@ -72,15 +79,41 @@ namespace qformats::map
         fvec2 uv;
         fvec4 tangent;
 
+        friend std::ostream& operator<<(std::ostream& stream, const Vertex& v)
+        {
+            stream << "(" << v.point[0] << " " << v.point[1] << " " << v.point[2] << ")";
+            return stream;
+        }
+
         inline bool checkLegalVertext(const std::vector<MapFileFace> &faces)
         {
             for (auto f : faces)
             {
 
                 auto proj = tue::math::dot(f.planeNormal, point);
+                auto proj2 = tue::math::dot(-f.planeNormal, point);
+
+                
                 if (proj > f.planeDist && abs(f.planeDist - proj) > 0.0008)
+                {
+                    std::cout << "proj: " << proj << " point: " << point << " normal: " << f.planeNormal << " dist: " << f.planeDist << std::endl;
+    
+                    std::cout << "false here is number from fucker: " << proj2 << std::endl;
+                    std::cout << (proj2 + f.planeDist > 0.008f) << std::endl;
                     return false;
+                }
+                
+                /*
+                if (proj2 + f.planeDist > 0)
+                {
+                    return false;
+                }
+                */
+                std::cout << "proj: " << proj << " proj2: " << proj2 << " normal: " << f.planeNormal << " dist: " << f.planeDist << std::endl;
+                std::cout << (proj2 + f.planeDist > 0.008f) << std::endl;
             }
+            
+            std::cout << "true" << std::endl;
             return true;
         }
 
@@ -94,4 +127,6 @@ namespace qformats::map
             return false;
         }
     };
+
+
 }

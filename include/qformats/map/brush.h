@@ -9,13 +9,11 @@ namespace qformats::map
 {
     template <class T>
     using boolRet = std::pair<bool, T>;
-    using PolygonPtr = std::shared_ptr<Polygon>;
-    using PolygonIter = std::vector<PolygonPtr>::iterator;
     class Brush
     {
     public:
         Brush(){};
-        const bool DoesIntersect(Brush &other);
+        bool DoesIntersect(const Brush& other);
         std::vector<PolygonPtr> polygons;
 
     private:
@@ -28,6 +26,7 @@ namespace qformats::map
         void buildGeometry(const std::map<int, bool> &excludedTextureIDs);
         void generatePolygons(const std::map<int, bool> &excludedTextureIDs);
         void windFaceVertices();
+        void clipToBrush(const Brush& other);
         void indexFaceVertices();
         void calculateAABB();
         fvec4 calcStandardTangent(const MapFileFace &face);

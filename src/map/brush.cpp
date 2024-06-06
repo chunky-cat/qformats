@@ -1,5 +1,6 @@
 #include "qformats/map/brush.h"
-#include "qmath.h"
+#include <qformats/map/qmath.h>
+#include <iostream>
 
 namespace qformats::map
 {
@@ -106,6 +107,64 @@ namespace qformats::map
         }
     }
 
+    PolygonPtr ClipToList(PolygonIter& first, const PolygonIter& firstEnd, PolygonIter& second, const PolygonIter& secondEnd)
+    {
+        auto ecp = second->get()->ClassifyPoly(first->get());
+        std::cout << "ecp: " << ecp << std::endl;
+        std::cout << "[first ] " << *first->get() << std::endl;
+        std::cout << "[second] " << *second->get() << std::endl;
+        std::cout << std::endl;
+        switch (ecp)
+        {
+        case Polygon::FRONT: // poligon is outside of brush
+            return *first;
+        case Polygon::BACK:
+            if (second == secondEnd)
+            {
+                return nullptr; // polygon is inside of brush
+            }
+            return ClipToList(first, firstEnd, ++second, secondEnd);
+        case Polygon::ONPLANE:
+
+            float angle = dot(second->get()->faceRef.planeNormal, first->get()->faceRef.planeNormal)-1;
+            if (angle < CMP_EPSILON && angle > -CMP_EPSILON)
+            {
+                return *first;
+            }
+            if (second == secondEnd)
+            {
+                return nullptr; // polygon is inside of brush
+            }
+            return ClipToList(first, firstEnd, ++second, secondEnd);
+        }
+    }
+
+    void Brush::clipToBrush(const Brush& other)
+    {
+        /*
+        for (const auto& p : polygons)
+        {
+            auto cop = p->Copy();
+            auto otherBeg = other.polygons.cbegin();
+            cop->ClipToList(otherBeg, other.polygons.cend());
+        }
+        */
+        auto otherPolys_iter = other.polygons.begin();
+        auto polys_iter = polygons.begin();
+        std::vector<PolygonPtr> clippedPolys;
+
+        while (polys_iter != polygons.cend())
+        {
+            auto clippedPoly = ClipToList(polys_iter, polygons.cend(), otherPolys_iter, other.polygons.cend());
+            if (clippedPoly != nullptr)
+            {
+                clippedPolys.push_back(*polys_iter);
+            }
+            ++polys_iter;
+        }
+        polygons = clippedPolys;
+    }
+
     fvec3 GetUnitNormal(const fvec2 p1, const fvec2 p2, const float s)
     {
         const fvec2 p3 = p1 + ((p2 - p1) * s);
@@ -160,8 +219,8 @@ namespace qformats::map
         }
     }
 
-    const bool Brush::DoesIntersect(Brush &other)
-    {
+    bool Brush::DoesIntersect(const Brush &other)
+    {        
         if ((min[0] > other.max[0]) || (other.min[0] > max[0]))
             return false;
 
