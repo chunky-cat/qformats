@@ -10,25 +10,12 @@
 #include "types.h"
 #include "map_file.h"
 #include "brush.h"
+#include "entities.h"
 #include "../textureman.h"
 
 namespace qformats::map
 {
-    class SolidEntity
-    {
-    public:
-        std::string ClassName() const { return entityRef->classname; };
-        bool ClassContains(const std::string &substr) const
-        {
-            return entityRef->classname.find(substr) != std::string::npos;
-        };
-
-        QBrushEntity *entityRef;
-        std::vector<Brush> geoBrushes;
-        std::vector<int> textureIDs;
-    };
-
-    using polygonGatherCb = std::function<void(std::vector<PolygonPtr>, int)>;
+    using polygonGatherCb = std::function<void(std::vector<FacePtr>, int)>;
 
     class QMap
     {
@@ -40,24 +27,25 @@ namespace qformats::map
         void LoadFile(const std::string &filename);
         void GenerateGeometry();
         void GatherPolygons(int entityID, polygonGatherCb);
-        std::vector<PolygonPtr> GetPolygonsByTexture(int entityID, std::string texName);
+
+        std::vector<FacePtr> GetPolygonsByTexture(int entityID, std::string texName);
         const std::vector<string> &Wads() { return map_file->wads; };
-        bool HasWads() { return map_file->wads.size() > 0; };
+        bool HasWads() { return !map_file->wads.empty(); };
         textures::ITexture *GetTextureByID(int id) { return texMan.GetTexture(id); };
+        std::vector<textures::ITexture *> GetTextures() { return texMan.GetTextures(); };
+
         QMapFile *MapData() { return map_file; };
-        std::vector<QPointEntity *> GetPointEntitiesByClass(const std::string &className);
-        const std::vector<QPointEntity *> &GetPointEntities() { return map_file->pointEntities; };
+        void ExcludeTextureSurface(const std::string& texture);
 
         void ConstructiveSolidGeometryUnion();
-        void ExcludeTextureSurface(std::string texture);
-        const std::vector<SolidEntity> &GetSolidEntities() { return solidEntities; };
-        const std::vector<textures::ITexture *> GetTextures() { return texMan.GetTextures(); };
+        const std::vector<SolidEntityPtr> &GetSolidEntities() { return map_file->solidEntities; };
+        const std::vector<PointEntityPtr> &GetPointEntities() { return map_file->pointEntities; };
+        std::vector<PointEntityPtr> GetPointEntitiesByClass(const std::string &className);
 
     private:
-        bool getPolygonsByTextureID(int entityID, int texID, std::vector<PolygonPtr> &list);
+        bool getPolygonsByTextureID(int entityID, int texID, std::vector<FacePtr> &list);
 
         std::map<int, bool> excludedTextureIDs;
-        std::vector<SolidEntity> solidEntities;
         textures::TextureMan texMan;
         QMapFile *map_file;
     };

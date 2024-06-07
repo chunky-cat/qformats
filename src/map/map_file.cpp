@@ -10,7 +10,7 @@
 
 namespace qformats::map
 {
-    static std::vector<std::string> rexec_vec(std::string line, std::string regexstr)
+    static std::vector<std::string> rexec_vec(std::string line, const std::string& regexstr)
     {
         std::stringstream results;
         std::regex re(regexstr, std::regex::icase);
@@ -75,16 +75,18 @@ namespace qformats::map
 
         for (auto *obj : objects)
         {
-            QEntity *ent = nullptr;
-            if (obj->children.size() > 0)
+            BaseEntity *ent = nullptr;
+            if (!obj->children.empty())
             {
-                ent = new QBrushEntity();
-                brushEntities.push_back(static_cast<QBrushEntity *>(ent));
+                auto sEnt = std::make_shared<SolidEntity>();
+                solidEntities.push_back(sEnt);
+                ent = static_cast<BaseEntity*>(sEnt.get());
             }
             else
             {
-                ent = new QPointEntity();
-                pointEntities.push_back(static_cast<QPointEntity *>(ent));
+                auto pEnt = std::make_shared<PointEntity>();
+                pointEntities.push_back(pEnt);
+                ent = static_cast<BaseEntity*>(pEnt.get());
             }
             for (std::string line; std::getline(obj->lines, line);)
             {
@@ -92,7 +94,7 @@ namespace qformats::map
             }
             for (auto *subObj : obj->children)
             {
-                parse_entity_planes(subObj->lines, static_cast<QBrushEntity *>(ent));
+                parse_entity_planes(subObj->lines, reinterpret_cast<SolidEntity *>(ent));
             }
         }
     }
@@ -107,7 +109,7 @@ namespace qformats::map
         }
     }
 
-    void QMapFile::parse_entity_attributes(std::string l, QEntity *ent)
+    void QMapFile::parse_entity_attributes(std::string l, BaseEntity *ent)
     {
         auto matches = rexec_vec(l, R"(\"([\s\S]*?)\")");
         if (matches[0] == "mapversion")
@@ -125,14 +127,14 @@ namespace qformats::map
             ent->classname = matches[1];
             if (ent->classname == "worldspawn")
             {
-                worldSpawn = reinterpret_cast<QBrushEntity *>(ent);
+                worldSpawn = reinterpret_cast<SolidEntity *>(ent);
             }
             return;
         }
         if (matches[0] == "origin")
         {
             std::stringstream stream(matches[1]);
-            auto pent = reinterpret_cast<QPointEntity *>(ent);
+            auto pent = reinterpret_cast<PointEntity *>(ent);
             stream >> pent->origin[0] >> pent->origin[1] >> pent->origin[2];
             return;
         }
@@ -144,31 +146,31 @@ namespace qformats::map
         }
         if (matches[0] == "_tb_name")
         {
-            auto bent = reinterpret_cast<QBrushEntity *>(ent);
+            auto bent = reinterpret_cast<SolidEntity *>(ent);
             bent->tbName = matches[1];
             return;
         }
         if (matches[0] == "_tb_type")
         {
-            auto bent = reinterpret_cast<QBrushEntity *>(ent);
+            auto bent = reinterpret_cast<SolidEntity *>(ent);
             bent->tbType = matches[1];
             return;
         }
         if (matches[0] == "_phong")
         {
-            auto bent = reinterpret_cast<QBrushEntity *>(ent);
+            auto bent = reinterpret_cast<SolidEntity *>(ent);
             bent->hasPhongShading = matches[1].compare("1") == 0;
             return;
         }
         ent->attributes.emplace(matches[0], matches[1]);
     }
 
-    void QMapFile::parse_entity_planes(std::stringstream &lines, QBrushEntity *ent)
+    void QMapFile::parse_entity_planes(std::stringstream &lines, SolidEntity *ent)
     {
         Brush brush;
         for (std::string line; std::getline(lines, line);)
         {
-            MapFileFace face;
+            auto face = std::make_shared<Face>();
             std::string chars = "()[]";
             for (unsigned int i = 0; i < chars.length(); ++i)
             {
@@ -176,35 +178,35 @@ namespace qformats::map
             }
 
             std::stringstream l(line);
-            l >> face.planePoints[0][0] >> face.planePoints[0][1] >> face.planePoints[0][2];
-            l >> face.planePoints[1][0] >> face.planePoints[1][1] >> face.planePoints[1][2];
-            l >> face.planePoints[2][0] >> face.planePoints[2][1] >> face.planePoints[2][2];
+            l >> face->planePoints[0][0] >> face->planePoints[0][1] >> face->planePoints[0][2];
+            l >> face->planePoints[1][0] >> face->planePoints[1][1] >> face->planePoints[1][2];
+            l >> face->planePoints[2][0] >> face->planePoints[2][1] >> face->planePoints[2][2];
             std::string texture;
             l >> texture;
             switch (mapVersion)
             {
             case VALVE_VERSION:
-                l >> face.valveUV.u[0] >> face.valveUV.u[1] >> face.valveUV.u[2] >> face.valveUV.u[3];
-                l >> face.valveUV.v[0] >> face.valveUV.v[1] >> face.valveUV.v[2] >> face.valveUV.v[3];
+                l >> face->valveUV.u[0] >> face->valveUV.u[1] >> face->valveUV.u[2] >> face->valveUV.u[3];
+                l >> face->valveUV.v[0] >> face->valveUV.v[1] >> face->valveUV.v[2] >> face->valveUV.v[3];
                 break;
             default:
-                l >> face.standardUv.u >> face.standardUv.v;
+                l >> face->standardUv.u >> face->standardUv.v;
                 break;
             }
-            l >> face.rotation >> face.scaleX >> face.scaleY;
+            l >> face->rotation >> face->scaleX >> face->scaleY;
 
-            fvec3 v0v1 = face.planePoints[1] - face.planePoints[0];
-            fvec3 v1v2 = face.planePoints[2] - face.planePoints[1];
-            face.planeNormal = normalize(cross(v1v2, v0v1));
-            face.planeDist = dot(face.planeNormal, face.planePoints[0]);
-            brush.hasValveUV = mapVersion == VALVE_VERSION;
-            face.textureID = getOrAddTexture(texture);
+            fvec3 v0v1 = face->planePoints[1] - face->planePoints[0];
+            fvec3 v1v2 = face->planePoints[2] - face->planePoints[1];
+            face->planeNormal = normalize(cross(v1v2, v0v1));
+            face->planeDist = dot(face->planeNormal, face->planePoints[0]);
+            face->hasValveUV = mapVersion == VALVE_VERSION;
+            face->textureID = getOrAddTexture(texture);
             brush.faces.push_back(face);
         }
         ent->brushes.push_back(brush);
     }
 
-    int QMapFile::getOrAddTexture(std::string texture)
+    size_t QMapFile::getOrAddTexture(const std::string& texture)
     {
         for (int i = 0; i < textures.size(); i++)
         {
@@ -212,7 +214,7 @@ namespace qformats::map
                 return i;
         }
         textures.push_back(texture);
-        int ret = textures.size() - 1;
+        size_t ret = textures.size() - 1;
         return ret;
     }
 }

@@ -1,5 +1,6 @@
 #include "qformats/map/map.h"
 #include <qformats/map/qmath.h>
+
 #include <iostream>
 
 namespace qformats::map
@@ -13,25 +14,20 @@ namespace qformats::map
 
     void QMap::GenerateGeometry()
     {
-        for (const auto &e : map_file->brushEntities)
+        for (const auto &se : map_file->solidEntities)
         {
-            SolidEntity se;
-            se.entityRef = e;
-            for (auto &b : e->brushes)
-            {
-                b.buildGeometry(excludedTextureIDs);
-                se.geoBrushes.push_back(b);
-            }
-            solidEntities.push_back(se);
+            se->generateMesh(excludedTextureIDs);
+            se->csgUnion();
         }
-        ConstructiveSolidGeometryUnion();
+        //ConstructiveSolidGeometryUnion();
     }
 
+    /*
     void QMap::ConstructiveSolidGeometryUnion()
     {
-        for (auto& se : solidEntities)
+        for (auto& se : map_file->solidEntities)
         {
-            for (auto& b : se.geoBrushes)
+            for (auto& b : se.brushes)
             {
                 std::cout << "-- BRUSH --" << std::endl;
                 for (auto &p : b.polygons)
@@ -44,11 +40,11 @@ namespace qformats::map
                 }
             }
 
-            auto clippedBrushes = se.geoBrushes;
+            auto clippedBrushes = se.brushes;
 
-            for (size_t i = 0; i < se.geoBrushes.size(); i++)
+            for (size_t i = 0; i < se.brushes.size(); i++)
             {
-                for (size_t j = 0; j < se.geoBrushes.size(); j++)
+                for (size_t j = 0; j < se.brushes.size(); j++)
                 {
                     if (i == j)
                     {
@@ -56,15 +52,16 @@ namespace qformats::map
                         continue;
                     }
 
-                    if (clippedBrushes[i].DoesIntersect(se.geoBrushes[j]))
+                    if (clippedBrushes[i].DoesIntersect(se.brushes[j]))
                     {
                         std::cout << "intersects" << std::endl;
-                        clippedBrushes[i].clipToBrush(se.geoBrushes[j]);
+                        clippedBrushes[i].clipToBrush(se.brushes[j]);
                     }
                 }
             }
         }
     }
+     */
 
     void QMap::LoadTextures(textures::textureRequestCb cb)
     {
@@ -75,13 +72,13 @@ namespace qformats::map
             texMan.GetOrAddTexture(t);
         }
 
-        for (auto &se : solidEntities)
-            for (auto &b : se.geoBrushes)
+        for (auto &se : map_file->solidEntities)
+            for (auto &b : se->brushes)
             {
-                for (auto p : b.polygons)
+                for (auto p : b.faces)
                 {
                     if (p->vertices.size() == 0) continue;
-                    auto tex = texMan.GetTexture(p->faceRef.textureID);
+                    auto tex = texMan.GetTexture(p->textureID);
                     if (tex == nullptr)
                     {
                         continue;
@@ -89,13 +86,13 @@ namespace qformats::map
 
                     for (auto &v : p->vertices)
                     {
-                        v.uv = QMath::CalcUV(b.hasValveUV, v.point, p->faceRef, tex->Width(), tex->Height());
+                        v.uv = p->CalcUV(v.point, tex->Width(), tex->Height());
                     }
                 }
             }
     }
 
-    void QMap::ExcludeTextureSurface(std::string texName)
+    void QMap::ExcludeTextureSurface(const std::string& texName)
     {
         for (int i = 0; i < map_file->textures.size(); i++)
         {
@@ -107,9 +104,9 @@ namespace qformats::map
         }
     }
 
-    std::vector<QPointEntity *> QMap::GetPointEntitiesByClass(const std::string &className)
+    std::vector<PointEntityPtr> QMap::GetPointEntitiesByClass(const std::string &className)
     {
-        std::vector<QPointEntity *> ents;
+        std::vector<PointEntityPtr> ents;
         for (auto pe : map_file->pointEntities)
         {
             if (pe->classname.find(className) != std::string::npos)
@@ -120,25 +117,24 @@ namespace qformats::map
         return ents;
     }
 
-    bool QMap::getPolygonsByTextureID(int entityID, int texID, std::vector<PolygonPtr> &list)
+    bool QMap::getPolygonsByTextureID(int entityID, int texID, std::vector<FacePtr> &list)
     {
-        if (solidEntities.size() >= entityID || entityID < 0)
+        if (map_file->solidEntities.size() >= entityID || entityID < 0)
             return false;
 
-        for (auto &b : solidEntities[entityID].geoBrushes)
-            for (auto &p : b.polygons)
+        for (auto &b : map_file->solidEntities[entityID].get()->brushes)
+            for (auto &p : b.faces)
             {
-                if (p->faceRef.textureID == texID)
+                if (p->textureID == texID)
                     list.push_back(p);
             }
-
         return list.size() > 0;
     }
 
-    std::vector<PolygonPtr> QMap::GetPolygonsByTexture(int entityID, std::string texName)
+    std::vector<FacePtr> QMap::GetPolygonsByTexture(int entityID, std::string texName)
     {
-        int id = texMan.GetTextureID(texName);
-        std::vector<PolygonPtr> polyList;
+        int id = texMan.GetTextureID(std::move(texName));
+        std::vector<FacePtr> polyList;
         if (id == -1)
             return polyList;
 
@@ -148,12 +144,12 @@ namespace qformats::map
 
     void QMap::GatherPolygons(int entityID, polygonGatherCb cb)
     {
-        if (solidEntities.size() >= entityID || entityID < 0)
+        if (map_file->solidEntities.size() >= entityID || entityID < 0)
             return;
 
         for (int i = 0; i < map_file->textures.size(); i++)
         {
-            std::vector<PolygonPtr> polyList;
+            std::vector<FacePtr> polyList;
             if (getPolygonsByTextureID(entityID, i, polyList))
             {
                 cb(polyList, i);
