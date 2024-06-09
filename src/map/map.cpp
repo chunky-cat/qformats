@@ -12,56 +12,14 @@ namespace qformats::map
         map_file = qfile;
     }
 
-    void QMap::GenerateGeometry()
+    void QMap::GenerateGeometry(bool clipBrushes)
     {
         for (const auto &se : map_file->solidEntities)
         {
             se->generateMesh(excludedTextureIDs);
-            se->csgUnion();
-        }
-        //ConstructiveSolidGeometryUnion();
-    }
-
-    /*
-    void QMap::ConstructiveSolidGeometryUnion()
-    {
-        for (auto& se : map_file->solidEntities)
-        {
-            for (auto& b : se.brushes)
-            {
-                std::cout << "-- BRUSH --" << std::endl;
-                for (auto &p : b.polygons)
-                {
-                    for (auto& v : p->vertices)
-                    {
-                        std::cout << v << std::endl;
-                    }
-                    std::cout << "--------" << std::endl;
-                }
-            }
-
-            auto clippedBrushes = se.brushes;
-
-            for (size_t i = 0; i < se.brushes.size(); i++)
-            {
-                for (size_t j = 0; j < se.brushes.size(); j++)
-                {
-                    if (i == j)
-                    {
-                        std::cout << "SKIP Brush" << std::endl;
-                        continue;
-                    }
-
-                    if (clippedBrushes[i].DoesIntersect(se.brushes[j]))
-                    {
-                        std::cout << "intersects" << std::endl;
-                        clippedBrushes[i].clipToBrush(se.brushes[j]);
-                    }
-                }
-            }
+            if (clipBrushes) se->csgUnion();
         }
     }
-     */
 
     void QMap::LoadTextures(textures::textureRequestCb cb)
     {
@@ -73,7 +31,9 @@ namespace qformats::map
         }
 
         for (auto &se : map_file->solidEntities)
-            for (auto &b : se->brushes)
+        {
+            auto &brushes = se->clippedBrushes.empty() ? se->brushes : se->clippedBrushes;
+            for (auto &b : brushes)
             {
                 for (auto p : b.faces)
                 {
@@ -90,6 +50,7 @@ namespace qformats::map
                     }
                 }
             }
+        }
     }
 
     void QMap::ExcludeTextureSurface(const std::string& texName)

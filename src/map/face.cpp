@@ -3,14 +3,19 @@
 
 namespace qformats::map
 {
-    using polyPair = std::pair<std::shared_ptr<Face>, std::shared_ptr<Face>>;
-    using polyPtr = std::shared_ptr<Face>;
-
-    polyPtr Face::Copy()
+    FacePtr Face::Copy()
     {
         auto newp = std::make_shared<Face>();
         newp->vertices = vertices;
         newp->indices = indices;
+        newp->planeNormal = planeNormal;
+        newp->planeDist = planeDist;
+        newp->valveUV = valveUV;
+        newp->scaleY = scaleY;
+        newp->scaleX = scaleY;
+        newp->hasValveUV = hasValveUV;
+        newp->min = min;
+        newp->max = max;
         return newp;
     }
 
@@ -34,13 +39,15 @@ namespace qformats::map
         }
     }
 
+
+
     Face::eCF Face::Classify(const Face *other)
     {
         bool bFront = false, bBack = false;
         for (int i = 0; i < (int)other->vertices.size(); i++)
         {
-            double dist = dot(planeNormal, other->vertices[i].point);
-            if(dist > planeDist && abs(planeDist - dist) > 0.0008)
+            double dist = dot(planeNormal, other->vertices[i].point)-planeDist;
+            if(dist > 0.001)
             {
                 if (bBack)
                 {
@@ -49,7 +56,7 @@ namespace qformats::map
 
                 bFront = true;
             }
-            else if (dist < planeDist && planeDist + dist < -0.0008)
+            else if (dist < -0.001)
             {
                 if (bFront)
                 {
@@ -119,11 +126,14 @@ namespace qformats::map
 
     bool Face::IsOnSamePlane(const Face *other)
     {
-        for (size_t i = 0; i < vertices.size(); i++)
+        for (const auto &v : other->vertices)
         {
-            if (other->vertices.size() <= i) break;
-            auto v = vertices[i].point*planeNormal - other->vertices[i].point *planeNormal;
-            if (tue::math::length(v) != 0) {
+            auto dist = (dot( planeNormal, v.point) + planeDist);
+
+            if (max[0] < v.point[0] || max[1] < v.point[1] || max[2] < v.point[2]) return false;
+
+
+            if (dist > CMP_EPSILON || dist < -CMP_EPSILON) {
                 return false;
             }
         }
@@ -151,13 +161,6 @@ namespace qformats::map
             return true;
 
         return true;
-    }
-
-    bool Face::isBigger(const Face *other)
-    {
-        if (max[0] > other->max[0] || max[1] > other->max[1] || max[2] > other->max[2]) return true;
-        if (min[0] < other->min[0] || min[1] < other->min[1] || min[2] < other->min[2]) return true;
-        return false;
     }
 
     fvec4 Face::calcStandardTangent()

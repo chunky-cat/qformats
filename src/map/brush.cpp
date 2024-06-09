@@ -117,11 +117,7 @@ Brush::windFaceVertices()
 FacePtr
 Brush::clipToList(FaceIter first, const FaceIter &firstEnd, FaceIter second, const FaceIter &secondEnd)
 {
-    if (second->get() == nullptr)
-    {
-        std::cout << "second end" << std::endl;
-        return nullptr;
-    }
+
     auto ecp = second->get()->Classify(first->get());
     switch (ecp)
     {
@@ -131,53 +127,55 @@ Brush::clipToList(FaceIter first, const FaceIter &firstEnd, FaceIter second, con
         }
         case Face::BACK:
         {
-            auto secNext = ++second;
-            if (second == secondEnd || secNext->get() == nullptr)
+            if (second + 1 == secondEnd)
             {
                 return nullptr; // polygon is inside of brush
             }
-            return clipToList(first, firstEnd, secNext, secondEnd);
+            return clipToList(first, firstEnd, ++second, secondEnd);
         }
         case Face::ONPLANE:
         {
-            float angle = dot(second->get()->planeNormal, first->get()->planeNormal) - 1;
-            if (angle < CMP_EPSILON && angle > -CMP_EPSILON)
+            double angle = dot(first->get()->planeNormal, second->get()->planeNormal) - 1;
+            if ((angle < epsilon) && (angle > -epsilon))
             {
-                std::cout << "onplane" << std::endl;
                 return *first;
             }
-            auto secNext = ++second;
-            if (second == secondEnd || secNext->get() == nullptr)
+
+            if (second + 1 == secondEnd)
             {
                 return nullptr; // polygon is inside of brush
             }
 
-            return clipToList(first, firstEnd, secNext, secondEnd);
+            return clipToList(first, firstEnd, ++second, secondEnd);
         }
-        case Face::SPANNING:std::cout << "spanning" << std::endl;
-            break;
+        case Face::SPANNING:
+        {
+            //TODO: split polygon
+            return *first;
+        }
+
     }
     return *first;
 }
 
-void
-Brush::clipToBrush(const Brush &other)
+std::vector<FacePtr> Brush::clipToBrush(const Brush &other)
 {
     auto otherFaces_iter = other.faces.begin();
     auto faces_iter = faces.begin();
     std::vector<FacePtr> clippedFaces;
-
     while (faces_iter != faces.cend())
     {
+
         auto clippedPoly = clipToList(faces_iter, faces.cend(), otherFaces_iter, other.faces.cend());
         if (clippedPoly != nullptr)
         {
             clippedFaces.push_back(clippedPoly);
         }
+
         ++faces_iter;
     }
 
-    faces = clippedFaces;
+    return clippedFaces;
 }
 
 fvec3

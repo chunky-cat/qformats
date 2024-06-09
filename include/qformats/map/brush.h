@@ -24,7 +24,7 @@ namespace qformats::map
 
         void generatePolygons(const std::map<int, bool> &excludedTextureIDs);
         void windFaceVertices();
-        void clipToBrush(const Brush& other);
+        std::vector<FacePtr> clipToBrush(const Brush& other);
         void indexFaceVertices();
         void calculateAABB();
         Vertex mergeDuplicate(int from, Vertex &v);

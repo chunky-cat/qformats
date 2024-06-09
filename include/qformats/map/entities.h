@@ -36,15 +36,20 @@ namespace qformats::map {
             return classname.find(substr) != std::string::npos;
         };
         const std::vector<Brush> &GetBrushes() { return brushes; }
+        const std::vector<Brush> &GetClippedBrushes() { return clippedBrushes; }
+        // stats getter
+        size_t  StatsClippedFaces() { return stats_clippedFaces; }
     private:
         void generateMesh(const std::map<int, bool> &excludedTextureIDs);
         void csgUnion();
 
         std::vector<Brush> brushes;
+        std::vector<Brush> clippedBrushes;
         std::string tbType;
         std::string tbName;
         bool hasPhongShading;
         std::vector<int> textureIDs;
+        size_t stats_clippedFaces;
 
         friend class QMapFile;
         friend class QMap;

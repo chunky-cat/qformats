@@ -22,21 +22,21 @@ namespace qformats::map
         };
 
     public:
-        Face(){};
+        Face()= default;
+
         Face::eCF Classify(const Face *other);
         FacePtr ClipToList(FaceIter &other, const FaceIter &end);
-
+        FacePtr Copy();
         void UpdateAB();
         bool IsOnSamePlane(const Face *other);
-        bool isBigger(const Face *other);
         void UpdateNormals();
-        std::shared_ptr<Face> Copy();
+        std::shared_ptr<Face> Copy() const;
 
         int TextureID() {return textureID;};
 
         std::vector<Vertex> vertices;
         std::vector<unsigned short> indices;
-        fvec3 center,min,max;
+        fvec3 center{},min{},max{};
         bool noDraw = false;
         bool operator==(const Face &arg_) const;
 
@@ -70,16 +70,16 @@ namespace qformats::map
         fvec2 calcValveUV(fvec3 vertex, int texW, int texH);
 
 
-        std::array<fvec3, 3> planePoints;
-        fvec3 planeNormal;
-        float planeDist;
-        StandardUV standardUv;
-        ValveUV valveUV;
-        double rotation;
-        double scaleX;
-        double scaleY;
-        bool hasValveUV;
-        int textureID;
+        std::array<fvec3, 3> planePoints{};
+        fvec3 planeNormal{};
+        float planeDist{};
+        StandardUV standardUv{};
+        ValveUV valveUV{};
+        double rotation{};
+        double scaleX{};
+        double scaleY{};
+        bool hasValveUV{};
+        int textureID{};
 
         friend class Brush;
         friend class QMapFile;

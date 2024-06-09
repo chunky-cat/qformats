@@ -25,7 +25,7 @@ namespace qformats::map
 
         void LoadTextures(textures::textureRequestCb cb);
         void LoadFile(const std::string &filename);
-        void GenerateGeometry();
+        void GenerateGeometry(bool clipBrushes = true);
         void GatherPolygons(int entityID, polygonGatherCb);
 
         std::vector<FacePtr> GetPolygonsByTexture(int entityID, std::string texName);
@@ -37,7 +37,6 @@ namespace qformats::map
         QMapFile *MapData() { return map_file; };
         void ExcludeTextureSurface(const std::string& texture);
 
-        void ConstructiveSolidGeometryUnion();
         const std::vector<SolidEntityPtr> &GetSolidEntities() { return map_file->solidEntities; };
         const std::vector<PointEntityPtr> &GetPointEntities() { return map_file->pointEntities; };
         std::vector<PointEntityPtr> GetPointEntitiesByClass(const std::string &className);
