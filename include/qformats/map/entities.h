@@ -8,55 +8,87 @@
 #include "types.h"
 #include "brush.h"
 
-namespace qformats::map {
+namespace qformats::map
+{
 
-    class BaseEntity
-    {
-    public:
-        std::string classname;
-        float angle;
-        std::map<std::string, std::string> attributes;
+	class BaseEntity
+	{
+	public:
+		enum eEntityType
+		{
+			POINT = 0,
+			SOLID = 1,
+		};
 
-        friend class QMapFile;
-    };
+		explicit BaseEntity(eEntityType type)
+				:type(type)
+		{
+		};
 
-    class PointEntity : public BaseEntity
-    {
-    public:
-        fvec3 origin{};
+		eEntityType type{};
+		std::string classname;
+		float angle{};
+		fvec3 origin{};
+		std::string tbType;
+		std::string tbName;
+		std::map<std::string, std::string> attributes;
+		friend class QMapFile;
+	};
 
-        friend class QMapFile;
-    };
+	class PointEntity : public BaseEntity
+	{
+	public:
+		PointEntity()
+				:BaseEntity(POINT)
+		{
+		};
+	};
 
-    class SolidEntity: public BaseEntity {
-    public:
-        [[nodiscard]] std::string ClassName() const { return classname; };
-        [[nodiscard]] bool ClassContains(const std::string &substr) const
-        {
-            return classname.find(substr) != std::string::npos;
-        };
-        const std::vector<Brush> &GetBrushes() { return brushes; }
-        const std::vector<Brush> &GetClippedBrushes() { return clippedBrushes; }
-        // stats getter
-        size_t  StatsClippedFaces() { return stats_clippedFaces; }
-    private:
-        void generateMesh(const std::map<int, bool> &excludedTextureIDs);
-        void csgUnion();
+	class SolidEntity : public BaseEntity
+	{
+	public:
+		SolidEntity()
+				:BaseEntity(SOLID)
+		{
+		};
 
-        std::vector<Brush> brushes;
-        std::vector<Brush> clippedBrushes;
-        std::string tbType;
-        std::string tbName;
-        bool hasPhongShading;
-        std::vector<int> textureIDs;
-        size_t stats_clippedFaces;
+		[[nodiscard]] std::string ClassName() const
+		{
+			return classname;
+		};
+		[[nodiscard]] bool ClassContains(const std::string& substr) const
+		{
+			return classname.find(substr) != std::string::npos;
+		};
+		const std::vector<Brush>& GetBrushes()
+		{
+			return brushes;
+		}
+		const std::vector<Brush>& GetClippedBrushes()
+		{
+			return clippedBrushes;
+		}
+		// stats getter
+		size_t StatsClippedFaces() const
+		{
+			return stats_clippedFaces;
+		}
+	private:
+		void generateMesh(const std::map<int, bool>& excludedTextureIDs);
+		void csgUnion();
 
-        friend class QMapFile;
-        friend class QMap;
-    };
+		std::vector<Brush> brushes;
+		std::vector<Brush> clippedBrushes;
+		bool hasPhongShading{};
+		std::vector<int> textureIDs;
+		size_t stats_clippedFaces{};
 
-    using BaseEntityPtr = std::shared_ptr<BaseEntity>;
-    using SolidEntityPtr = std::shared_ptr<SolidEntity>;
-    using PointEntityPtr = std::shared_ptr<PointEntity>;
+		friend class QMapFile;
+		friend class QMap;
+	};
+
+	using BaseEntityPtr = std::shared_ptr<BaseEntity>;
+	using SolidEntityPtr = std::shared_ptr<SolidEntity>;
+	using PointEntityPtr = std::shared_ptr<PointEntity>;
 }
 

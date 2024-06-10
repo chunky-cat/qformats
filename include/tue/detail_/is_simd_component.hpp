@@ -13,128 +13,128 @@
 
 namespace tue
 {
-    enum bool8 : std::uint8_t;
-    enum bool16 : std::uint16_t;
-    enum bool32 : std::uint32_t;
-    enum bool64 : std::uint64_t;
+	enum bool8 : std::uint8_t;
+	enum bool16 : std::uint16_t;
+	enum bool32 : std::uint32_t;
+	enum bool64 : std::uint64_t;
 
-    template<typename T>
-    struct is_simd_component
-    :
-        public std::integral_constant<bool, false>
-    {
-        using std::integral_constant<bool, false>::integral_constant;
-    };
+	template<typename T>
+	struct is_simd_component
+			:
+					public std::integral_constant<bool, false>
+	{
+		using std::integral_constant<bool, false>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<float>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<float>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<double>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<double>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::int8_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::int8_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::int16_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::int16_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::int32_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::int32_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::int64_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::int64_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::uint8_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::uint8_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::uint16_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::uint16_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::uint32_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::uint32_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<std::uint64_t>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<std::uint64_t>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<bool8>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<bool8>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<bool16>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<bool16>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<bool32>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<bool32>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 
-    template<>
-    struct is_simd_component<bool64>
-    :
-        public std::integral_constant<bool, true>
-    {
-        using std::integral_constant<bool, true>::integral_constant;
-    };
+	template<>
+	struct is_simd_component<bool64>
+			:
+					public std::integral_constant<bool, true>
+	{
+		using std::integral_constant<bool, true>::integral_constant;
+	};
 }
