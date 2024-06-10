@@ -16,13 +16,13 @@
 
 namespace tue
 {
-    namespace detail_
-    {
-        inline float binary_float(std::uint32_t x) noexcept
-        {
-            return reinterpret_cast<const float&>(x);
-        }
-    }
+	namespace detail_
+	{
+		inline float binary_float(std::uint32_t x) noexcept
+		{
+			return reinterpret_cast<const float&>(x);
+		}
+	}
 }
 
 #include "simd/sse/bool32x4.sse.hpp"
@@ -32,13 +32,13 @@ namespace tue
 
 namespace tue
 {
-    namespace detail_
-    {
-        inline double binary_double(std::uint64_t x) noexcept
-        {
-            return reinterpret_cast<const double&>(x);
-        }
-    }
+	namespace detail_
+	{
+		inline double binary_double(std::uint64_t x) noexcept
+		{
+			return reinterpret_cast<const double&>(x);
+		}
+	}
 }
 
 #include "simd/sse2/bool8x16.sse2.hpp"

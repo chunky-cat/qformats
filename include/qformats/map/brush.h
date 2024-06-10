@@ -1,43 +1,38 @@
 #pragma once
 
 #include "types.h"
-#include "polygon.h"
+#include "face.h"
 #include <vector>
 #include <memory>
 
 namespace qformats::map
 {
-    template <class T>
-    using boolRet = std::pair<bool, T>;
-    using PolygonPtr = std::shared_ptr<Polygon>;
-    using PolygonIter = std::vector<PolygonPtr>::iterator;
-    class Brush
-    {
-    public:
-        Brush(){};
-        const bool DoesIntersect(Brush &other);
-        std::vector<PolygonPtr> polygons;
+	template<class T>
+	using boolRet = std::pair<bool, T>;
+	class Brush
+	{
+	public:
+		Brush() = default;
+		bool DoesIntersect(const Brush& other);
+		void buildGeometry(const std::map<int, bool>& excludedTextureIDs);
+		[[nodiscard]] inline const std::vector<FacePtr> &GetFaces() const { return faces; }
+	private:
+		fvec3 min;
+		fvec3 max;
+		std::vector<FacePtr> faces;
 
-    private:
-        std::vector<MapFileFace> faces;
-        bool hasValveUV;
+		void generatePolygons(const std::map<int, bool>& excludedTextureIDs);
+		void windFaceVertices();
+		std::vector<FacePtr> clipToBrush(const Brush& other);
+		void indexFaceVertices();
+		void calculateAABB();
+		Vertex mergeDuplicate(int from, Vertex& v);
+		boolRet<Vertex> intersectPlanes(const FacePtr& a, const FacePtr& b, const FacePtr& c);
+		static bool isLegalVertex(const Vertex& v, const std::vector<FacePtr>& faces);
 
-        fvec3 min;
-        fvec3 max;
+		FacePtr clipToList(FaceIter first, const FaceIter& firstEnd, FaceIter second, const FaceIter& secondEnd);
 
-        void buildGeometry(const std::map<int, bool> &excludedTextureIDs);
-        void generatePolygons(const std::map<int, bool> &excludedTextureIDs);
-        void windFaceVertices();
-        void indexFaceVertices();
-        void calculateAABB();
-        fvec4 calcStandardTangent(const MapFileFace &face);
-        fvec4 calcValveTangent(const MapFileFace &face);
-        fvec2 calcStandardUV(fvec3 vertex, const MapFileFace &face, int texW, int texH);
-        fvec2 calcValveUV(fvec3 vertex, const MapFileFace &face, int texW, int texH);
-        Vertex mergeDuplicate(int from, Vertex &v);
-        boolRet<Vertex> intersectPlanes(const MapFileFace &a, const MapFileFace &b, const MapFileFace &c);
-
-        friend class QMap;
-        friend class QMapFile;
-    };
+		friend class QMapFile;
+		friend class SolidEntity;
+	};
 }

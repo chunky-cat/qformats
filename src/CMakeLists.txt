@@ -1,12 +1,14 @@
-add_library(${PROJECT_NAME} SHARED
-    common/textureman.cpp    
-    map/map_file.cpp
-    map/map.cpp
-    map/brush.cpp
-    map/qmath.cpp
-    map/polygon.cpp
-    wad/palette.cpp
-    wad/wad.cpp
+add_library(${PROJECT_NAME} STATIC
+        common/textureman.cpp
+        map/map_file.cpp
+        map/map.cpp
+        map/brush.cpp
+        map/qmath.cpp
+        map/face.cpp
+        wad/palette.cpp
+        wad/wad.cpp
+        map/entity_solid.cpp
+        ../include/qformats/map/entities.h
 )
 
 

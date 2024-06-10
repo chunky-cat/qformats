@@ -13,8 +13,8 @@
  * @{
  */
 #if defined(__SSE__) \
-    || (defined(_M_IX86_FP) && _M_IX86_FP >= 1) \
-    || defined(_M_X64)
+ || (defined(_M_IX86_FP) && _M_IX86_FP >= 1) \
+ || defined(_M_X64)
 /*!
  * \brief Defined if the current compiler configuration supports SSE
  *        intrinsics.
@@ -23,8 +23,8 @@
 #endif
 
 #if defined(__SSE2__) \
-    || (defined(_M_IX86_FP) && _M_IX86_FP >= 2) \
-    || defined(_M_X64)
+ || (defined(_M_IX86_FP) && _M_IX86_FP >= 2) \
+ || defined(_M_X64)
 /*!
  * \brief Defined if the current compiler configuration supports SSE2
  *        intrinsics.

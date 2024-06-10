@@ -10,23 +10,23 @@
 
 namespace tue
 {
-    /*!
-     * \defgroup  unused_hpp <tue/unused.hpp>
-     *
-     * \brief     The `unused()` function template.
-     *
-     * @{
-     */
+/*!
+ * \defgroup  unused_hpp <tue/unused.hpp>
+ *
+ * \brief     The `unused()` function template.
+ *
+ * @{
+ */
 
-    /*!
-     * \brief        Suppresses unused variable warnings.
-     *
-     * \tparam Args  The parameter types with reference qualifiers removed.
-     */
-    template<typename... Args>
-    inline void unused(Args&&...) noexcept
-    {
-    }
+/*!
+ * \brief        Suppresses unused variable warnings.
+ *
+ * \tparam Args  The parameter types with reference qualifiers removed.
+ */
+	template<typename... Args>
+	inline void unused(Args&& ...) noexcept
+	{
+	}
 
-    /*!@}*/
+/*!@}*/
 }
