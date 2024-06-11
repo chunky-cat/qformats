@@ -102,6 +102,17 @@ namespace qformats::map
 				parse_entity_planes(subObj->lines, reinterpret_cast<SolidEntity*>(ent));
 			}
 		}
+
+		// TODO: use shared_ptr + weak_ptr
+		for (auto obj : objects)
+		{
+			for (auto child : obj->children) {
+				delete child;
+			}
+			delete obj;
+		}
+
+		strstr.close();
 	}
 
 	void QMapFile::parse_wad_string(const std::string& wstr)

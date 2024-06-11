@@ -78,6 +78,7 @@ namespace qformats::textures
 	class TextureMan
 	{
 	public:
+		~TextureMan();
 		int GetOrAddTexture(string name);
 		void OnTextureRequested(textureRequestCb);
 		ITexture* GetTexture(int texID);

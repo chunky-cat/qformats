@@ -1,5 +1,4 @@
 #include "qformats/map/map.h"
-#include <qformats/map/qmath.h>
 
 #include <iostream>
 
@@ -7,9 +6,8 @@ namespace qformats::map
 {
 	void QMap::LoadFile(const std::string &filename)
 	{
-		auto qfile = new QMapFile();
-		qfile->Parse(filename);
-		map_file = qfile;
+		map_file = std::make_shared<QMapFile>();
+		map_file->Parse(filename);
 	}
 
 	void QMap::GenerateGeometry(bool clipBrushes)

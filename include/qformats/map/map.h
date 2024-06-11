@@ -48,7 +48,7 @@ namespace qformats::map
 
 		QMapFile *MapData()
 		{
-			return map_file;
+			return map_file.get();
 		};
 		void ExcludeTextureSurface(const std::string &texture);
 
@@ -67,6 +67,6 @@ namespace qformats::map
 
 		std::map<int, bool> excludedTextureIDs;
 		textures::TextureMan texMan;
-		QMapFile *map_file;
+		std::shared_ptr<QMapFile> map_file;
 	};
 }

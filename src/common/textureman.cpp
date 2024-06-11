@@ -55,4 +55,11 @@ namespace qformats::textures
 
 		return newTex;
 	}
+	TextureMan::~TextureMan()
+	{
+		for (auto t : textures)
+		{
+			delete t;
+		}
+	}
 }
