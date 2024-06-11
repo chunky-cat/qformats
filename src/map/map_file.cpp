@@ -24,6 +24,12 @@ namespace qformats::map
 		return matches;
 	}
 
+	inline std::string& ltrim(std::string& s, const char* t = " ")
+	{
+		s.erase(0, s.find_first_not_of(t));
+		return s;
+	}
+
 	void QMapFile::Parse(const std::string& filename)
 	{
 		struct parsedObject
@@ -39,6 +45,12 @@ namespace qformats::map
 		for (std::string line; std::getline(strstr, line);)
 		{
 			std::erase(line, '\r');
+			if (line.empty())
+			{
+				continue;
+			}
+			line = ltrim(line);
+
 			// HACK: we better analyze the face UV's to figure out format.
 			if (line == "// Format: Valve")
 			{
@@ -106,7 +118,8 @@ namespace qformats::map
 		// TODO: use shared_ptr + weak_ptr
 		for (auto obj : objects)
 		{
-			for (auto child : obj->children) {
+			for (auto child : obj->children)
+			{
 				delete child;
 			}
 			delete obj;
@@ -127,7 +140,13 @@ namespace qformats::map
 
 	void QMapFile::parse_entity_attributes(std::string l, BaseEntity* ent)
 	{
+
 		auto matches = rexec_vec(l, R"(\"([\s\S]*?)\")");
+		if (matches.empty())
+		{
+			return;
+		}
+
 		if (matches[0] == "mapversion")
 		{
 			mapVersion = stoi(matches[1]);
@@ -220,7 +239,7 @@ namespace qformats::map
 			float rotation{}, scaleX{}, scaleY{};
 			l >> rotation >> scaleX >> scaleY;
 
-			auto face= mapVersion == STANDARD_VERSION ? std::make_shared<Face>(facePoints, getOrAddTexture(texture),
+			auto face = mapVersion == STANDARD_VERSION ? std::make_shared<Face>(facePoints, getOrAddTexture(texture),
 					standardUV, rotation, scaleX, scaleY) :
 						std::make_shared<Face>(facePoints, getOrAddTexture(texture), valveUV, rotation, scaleX, scaleY);
 
