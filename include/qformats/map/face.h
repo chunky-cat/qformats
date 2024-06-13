@@ -24,17 +24,19 @@ namespace qformats::map
 
 	public:
 		Face() = default;
+
 		Face(const std::array<fvec3, 3>& points, int textureID, StandardUV uv, float rotation, float scaleX,
-				float scaleY)
-				:planePoints(points), textureID(textureID), standardUV(uv), rotation(rotation), scaleX(scaleX),
-				 scaleY(scaleY), hasValveUV(false)
+		     float scaleY)
+			: planePoints(points), standardUV(uv), textureID(textureID), rotation(rotation), scaleX(scaleX),
+			  scaleY(scaleY)
 		{
 			initPlane();
 		};
+
 		Face(const std::array<fvec3, 3>& points, int textureID, ValveUV uv, float rotation, float scaleX,
-				float scaleY)
-				:planePoints(points), textureID(textureID), valveUV(uv), rotation(rotation), scaleX(scaleX),
-				 scaleY(scaleY), hasValveUV(true)
+		     float scaleY)
+			: planePoints(points), valveUV(uv), textureID(textureID), rotation(rotation), scaleX(scaleX),
+			  scaleY(scaleY), hasValveUV(true)
 		{
 			initPlane();
 		};
@@ -49,10 +51,10 @@ namespace qformats::map
 			return textureID;
 		};
 
-		[[nodiscard]] inline const fvec3 &GetPlaneNormal() const { return planeNormal; }
-		[[nodiscard]] inline const float &GetPlaneDist() const { return planeDist; }
-		[[nodiscard]] inline const std::vector<Vertex> &GetVertices() const { return vertices; }
-		[[nodiscard]] inline const std::vector<unsigned short> &GetIndices() const { return indices; }
+		[[nodiscard]] inline const fvec3& GetPlaneNormal() const { return planeNormal; }
+		[[nodiscard]] inline const float& GetPlaneDist() const { return planeDist; }
+		[[nodiscard]] inline const std::vector<Vertex>& GetVertices() const { return vertices; }
+		[[nodiscard]] inline const std::vector<unsigned short>& GetIndices() const { return indices; }
 
 		fvec3 center{}, min{}, max{};
 		bool noDraw = false;
@@ -77,6 +79,7 @@ namespace qformats::map
 		{
 			return hasValveUV ? calcValveTangent() : calcStandardTangent();
 		};
+
 		fvec2 CalcUV(fvec3 vertex, int texW, int texH)
 		{
 			return hasValveUV ? calcValveUV(vertex, texW, texH) : calcStandardUV(vertex, texW, texH);
@@ -97,11 +100,11 @@ namespace qformats::map
 		float planeDist{};
 		StandardUV standardUV{};
 		ValveUV valveUV{};
+		int textureID{};
 		float rotation{};
 		float scaleX{};
 		float scaleY{};
 		bool hasValveUV{};
-		int textureID{};
 
 		friend class Brush;
 		friend class QMap;

@@ -46,6 +46,11 @@ namespace qformats::map
 			return texMan.GetTextures();
 		};
 
+		const std::vector<std::string> &GetTexturesNames()
+		{
+			return map_file->textures;
+		};
+
 		QMapFile *MapData()
 		{
 			return map_file.get();

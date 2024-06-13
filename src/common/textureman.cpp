@@ -59,7 +59,7 @@ namespace qformats::textures
 	{
 		for (auto t : textures)
 		{
-			delete t;
+			//delete t;
 		}
 	}
 }

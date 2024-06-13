@@ -16,9 +16,12 @@ namespace qformats::map
 		bool DoesIntersect(const Brush& other);
 		void buildGeometry(const std::map<int, bool>& excludedTextureIDs);
 		[[nodiscard]] inline const std::vector<FacePtr> &GetFaces() const { return faces; }
+		fvec3 GetMin() const { return min; };
+		fvec3 GetMax() const { return max; };
+		
+		fvec3 min{};
+		fvec3 max{};
 	private:
-		fvec3 min;
-		fvec3 max;
 		std::vector<FacePtr> faces;
 
 		void generatePolygons(const std::map<int, bool>& excludedTextureIDs);
