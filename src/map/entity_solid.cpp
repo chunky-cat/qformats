@@ -3,16 +3,28 @@
 namespace qformats::map
 {
 
-	void SolidEntity::generateMesh(const std::map<int, bool>& excludedTextureIDs)
+	void SolidEntity::generateMesh(const std::map<int, Face::eFaceType>& faceTypes)
 	{
+		if (!brushes.empty())
+		{
+			min = brushes[0].min;
+			max = brushes[0].max;
+		}
 		for (auto& b : brushes)
 		{
-			b.buildGeometry(excludedTextureIDs);
+			b.buildGeometry(faceTypes);
+			b.GetBiggerBBox(min,max);
 		}
+		center = CalculateCenterFromBBox(min,max);
 	}
 
 	void SolidEntity::csgUnion()
 	{
+		if (!brushes.empty())
+		{
+			min = brushes[0].min;
+			max = brushes[0].max;
+		}
 		for (auto& b1 : brushes)
 		{
 			auto cpBrush = b1;
@@ -35,8 +47,10 @@ namespace qformats::map
 			if (!cpBrush.faces.empty())
 			{
 				clippedBrushes.push_back(cpBrush);
+				cpBrush.GetBiggerBBox(min,max);
 				stats_clippedFaces += b1.faces.size() - cpBrush.faces.size();
 			}
 		}
+		center = CalculateCenterFromBBox(min,max);
 	}
 }

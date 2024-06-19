@@ -14,17 +14,15 @@ namespace qformats::map
 	public:
 		Brush() = default;
 		bool DoesIntersect(const Brush& other);
-		void buildGeometry(const std::map<int, bool>& excludedTextureIDs);
+		void buildGeometry(const std::map<int, Face::eFaceType>& faceTypes);
+		void GetBiggerBBox(fvec3 &min, fvec3 &max);
 		[[nodiscard]] inline const std::vector<FacePtr> &GetFaces() const { return faces; }
-		fvec3 GetMin() const { return min; };
-		fvec3 GetMax() const { return max; };
-		
 		fvec3 min{};
 		fvec3 max{};
 	private:
 		std::vector<FacePtr> faces;
 
-		void generatePolygons(const std::map<int, bool>& excludedTextureIDs);
+		void generatePolygons(const std::map<int, Face::eFaceType>& faceTypes);
 		void windFaceVertices();
 		std::vector<FacePtr> clipToBrush(const Brush& other);
 		void indexFaceVertices();

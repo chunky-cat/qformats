@@ -14,7 +14,7 @@ namespace qformats::map
 	{
 		for (const auto &se : map_file->solidEntities)
 		{
-			se->generateMesh(excludedTextureIDs);
+			se->generateMesh(textureIDTypes);
 			if (clipBrushes)
 			{
 				se->csgUnion();
@@ -56,15 +56,16 @@ namespace qformats::map
 		}
 	}
 
-	void QMap::ExcludeTextureSurface(const std::string &texName)
+	void QMap::SetFaceTypeByTextureID(const std::string &texture, Face::eFaceType type)
 	{
 		if (map_file == nullptr)
 			return;
+
 		for (int i = 0; i < map_file->textures.size(); i++)
 		{
-			if (map_file->textures[i].find(texName) != std::string::npos)
+			if (map_file->textures[i].find(texture) != std::string::npos)
 			{
-				excludedTextureIDs[i] = true;
+				this->textureIDTypes[i] = type;
 				return;
 			}
 		}

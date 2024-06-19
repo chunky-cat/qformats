@@ -19,4 +19,9 @@ namespace qformats::map
 	const auto UP_VEC = fvec3{ 0, 0, 1 };
 	const auto RIGHT_VEC = fvec3{ 0, 1, 0 };
 	const auto FORWARD_VEC = fvec3{ 1, 0, 0 };
+
+	inline fvec3 CalculateCenterFromBBox(const fvec3 &min, const fvec3 &max)
+	{
+		return fvec3((max[0] + min[0]) / 2,(max[1] + min[1]) / 2,(max[2] + min[2]) / 2);
+	}
 }

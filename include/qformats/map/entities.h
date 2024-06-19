@@ -10,7 +10,6 @@
 
 namespace qformats::map
 {
-
 	class BaseEntity
 	{
 	public:
@@ -21,7 +20,7 @@ namespace qformats::map
 		};
 
 		explicit BaseEntity(eEntityType type)
-				:type(type)
+			: type(type)
 		{
 		};
 
@@ -39,7 +38,7 @@ namespace qformats::map
 	{
 	public:
 		PointEntity()
-				:BaseEntity(POINT)
+			: BaseEntity(POINT)
 		{
 		};
 	};
@@ -48,7 +47,7 @@ namespace qformats::map
 	{
 	public:
 		SolidEntity()
-				:BaseEntity(SOLID)
+			: BaseEntity(SOLID)
 		{
 		};
 
@@ -56,25 +55,35 @@ namespace qformats::map
 		{
 			return classname;
 		};
+
 		[[nodiscard]] bool ClassContains(const std::string& substr) const
 		{
 			return classname.find(substr) != std::string::npos;
 		};
+
 		const std::vector<Brush>& GetBrushes()
 		{
 			return brushes;
 		}
+
 		const std::vector<Brush>& GetClippedBrushes()
 		{
 			return clippedBrushes;
 		}
+
+		const fvec3& GetCenter() const
+		{
+			return center;
+		};
+
 		// stats getter
 		size_t StatsClippedFaces() const
 		{
 			return stats_clippedFaces;
 		}
+
 	private:
-		void generateMesh(const std::map<int, bool>& excludedTextureIDs);
+		void generateMesh(const std::map<int, Face::eFaceType>& faceTypes);
 		void csgUnion();
 
 		std::vector<Brush> brushes;
@@ -82,6 +91,10 @@ namespace qformats::map
 		bool hasPhongShading{};
 		std::vector<int> textureIDs;
 		size_t stats_clippedFaces{};
+
+		fvec3 center{};
+		fvec3 min{};
+		fvec3 max{};
 
 		friend class QMapFile;
 		friend class QMap;
@@ -91,4 +104,3 @@ namespace qformats::map
 	using SolidEntityPtr = std::shared_ptr<SolidEntity>;
 	using PointEntityPtr = std::shared_ptr<PointEntity>;
 }
-

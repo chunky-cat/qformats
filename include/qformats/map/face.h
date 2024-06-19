@@ -14,12 +14,20 @@ namespace qformats::map
 	class Face
 	{
 	public:
-		enum eCF
+		enum eFaceClassification
 		{
 			FRONT = 0,
 			BACK,
 			ON_PLANE,
 			SPANNING,
+		};
+
+		enum eFaceType
+		{
+			SOLID = 0,
+			CLIP,
+			SKIP,
+			NODRAW
 		};
 
 	public:
@@ -40,8 +48,8 @@ namespace qformats::map
 		{
 			initPlane();
 		};
-		Face::eCF Classify(const Face* other);
-		Face::eCF ClassifyPoint(const fvec3& v);
+		Face::eFaceClassification Classify(const Face* other);
+		Face::eFaceClassification ClassifyPoint(const fvec3& v);
 		void UpdateAB();
 		void UpdateNormals();
 		[[nodiscard]] FacePtr Copy() const;
@@ -51,13 +59,13 @@ namespace qformats::map
 			return textureID;
 		};
 
-		[[nodiscard]] inline const fvec3& GetPlaneNormal() const { return planeNormal; }
-		[[nodiscard]] inline const float& GetPlaneDist() const { return planeDist; }
-		[[nodiscard]] inline const std::vector<Vertex>& GetVertices() const { return vertices; }
-		[[nodiscard]] inline const std::vector<unsigned short>& GetIndices() const { return indices; }
+		[[nodiscard]] const fvec3& GetPlaneNormal() const { return planeNormal; }
+		[[nodiscard]] const float& GetPlaneDist() const { return planeDist; }
+		[[nodiscard]] const eFaceType Type() { return type; }
+		[[nodiscard]] const std::vector<Vertex>& GetVertices() const { return vertices; }
+		[[nodiscard]] const std::vector<unsigned short>& GetIndices() const { return indices; }
 
 		fvec3 center{}, min{}, max{};
-		bool noDraw = false;
 		bool operator==(const Face& arg_) const;
 
 		friend std::ostream&
@@ -104,6 +112,7 @@ namespace qformats::map
 		float rotation{};
 		float scaleX{};
 		float scaleY{};
+		eFaceType type = SOLID;
 		bool hasValveUV{};
 
 		friend class Brush;

@@ -48,7 +48,7 @@ namespace qformats::map
 		}
 	}
 
-	Face::eCF Face::Classify(const Face* other)
+	Face::eFaceClassification Face::Classify(const Face* other)
 	{
 		bool bFront = false, bBack = false;
 		for (int i = 0; i < (int)other->vertices.size(); i++)
@@ -58,7 +58,7 @@ namespace qformats::map
 			{
 				if (bBack)
 				{
-					return eCF::SPANNING;
+					return eFaceClassification::SPANNING;
 				}
 
 				bFront = true;
@@ -67,7 +67,7 @@ namespace qformats::map
 			{
 				if (bFront)
 				{
-					return eCF::SPANNING;
+					return eFaceClassification::SPANNING;
 				}
 
 				bBack = true;
@@ -76,14 +76,14 @@ namespace qformats::map
 
 		if (bFront)
 		{
-			return eCF::FRONT;
+			return eFaceClassification::FRONT;
 		}
 		else if (bBack)
 		{
-			return eCF::BACK;
+			return eFaceClassification::BACK;
 		}
 
-		return eCF::ON_PLANE;
+		return eFaceClassification::ON_PLANE;
 	}
 
 	bool Face::getIntersection(const fvec3& start, const fvec3& end, fvec3& out_intersectionPt, float& out_percentage)
@@ -107,18 +107,18 @@ namespace qformats::map
 		return true;
 	}
 
-	Face::eCF Face::ClassifyPoint(const fvec3& v)
+	Face::eFaceClassification Face::ClassifyPoint(const fvec3& v)
 	{
 		double dist = tue::math::dot(planeNormal, v) - planeDist;
 		if (dist > epsilon)
 		{
-			return Face::eCF::FRONT;
+			return Face::eFaceClassification::FRONT;
 		}
 		if (dist < -epsilon)
 		{
-			return Face::eCF::BACK;
+			return Face::eFaceClassification::BACK;
 		}
-		return Face::eCF::ON_PLANE;
+		return Face::eFaceClassification::ON_PLANE;
 	}
 
 	void Face::UpdateAB()
@@ -270,7 +270,7 @@ namespace qformats::map
 
 	std::pair<FacePtr, FacePtr> Face::splitFace(const Face* other)
 	{
-		std::vector<Face::eCF> pCF;
+		std::vector<Face::eFaceClassification> pCF;
 		pCF.resize(other->vertices.size());
 		for (int i = 0; i < other->vertices.size(); i++)
 			pCF[i] = ClassifyPoint(other->vertices[i].point);
@@ -309,11 +309,11 @@ namespace qformats::map
 			if (j == (other->vertices.size() - 1))
 				j = 0;
 
-			if ((pCF[i] == Face::eCF::ON_PLANE) && (pCF[j] != Face::eCF::ON_PLANE))
+			if ((pCF[i] == Face::eFaceClassification::ON_PLANE) && (pCF[j] != Face::eFaceClassification::ON_PLANE))
 			{
 				ignore = true;
 			}
-			else if ((pCF[j] == Face::eCF::ON_PLANE) && (pCF[i] != Face::eCF::ON_PLANE))
+			else if ((pCF[j] == Face::eFaceClassification::ON_PLANE) && (pCF[i] != Face::eFaceClassification::ON_PLANE))
 			{
 				ignore = true;
 			}

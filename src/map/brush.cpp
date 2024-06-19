@@ -6,12 +6,23 @@ namespace qformats::map
 {
 	const auto fv3zero = Vertex();
 
-	void Brush::buildGeometry(const std::map<int, bool>& excludedTextureIDs)
+	void Brush::buildGeometry(const std::map<int, Face::eFaceType>& faceTypes)
 	{
-		generatePolygons(excludedTextureIDs);
+		generatePolygons(faceTypes);
 		windFaceVertices();
 		indexFaceVertices();
 		calculateAABB();
+	}
+
+	void Brush::GetBiggerBBox(fvec3 &outMin, fvec3 &outMax)
+	{
+		outMax[0] = max[0] > outMax[0] ? max[0] : outMax[0];
+		outMax[1] = max[1] > outMax[1] ? max[1] : outMax[1];
+		outMax[2] = max[2] > outMax[2] ? max[2] : outMax[2];
+		
+		outMin[0] = min[0] < outMin[0] ? min[0] : outMin[0];
+		outMin[1] = min[1] < outMin[1] ? min[1] : outMin[1];
+		outMin[2] = min[2] < outMin[2] ? min[2] : outMin[2];
 	}
 
 	boolRet<Vertex> Brush::intersectPlanes(const FacePtr& a, const FacePtr& b, const FacePtr& c)
@@ -111,7 +122,7 @@ namespace qformats::map
 
 	FacePtr Brush::clipToList(FaceIter first, const FaceIter& firstEnd, FaceIter second, const FaceIter& secondEnd)
 	{
-		if (second->get()->noDraw)
+		if (second->get()->Type() != Face::SOLID)
 		{
 			return *first;
 		}
@@ -189,7 +200,7 @@ namespace qformats::map
 		return normalize(normal);
 	}
 
-	void Brush::generatePolygons(const std::map<int, bool>& excludedTextureIDs)
+	void Brush::generatePolygons(const std::map<int, Face::eFaceType>& faceTypes)
 	{
 		float phongAngle = 89.0;
 		for (int i = 0; i < faces.size(); i++)
@@ -207,10 +218,9 @@ namespace qformats::map
 					{
 						continue;
 					}
-
-					if (excludedTextureIDs.count(faces[k]->textureID))
-						faces[k]->noDraw = true;
-
+					auto kv = faceTypes.find(faces[k]->textureID);
+					faces[k]->type = kv->second;
+					
 					auto res = intersectPlanes(faces[i], faces[j], faces[k]);
 					if (!res.first || !isLegalVertex(res.second, faces))
 						continue;
