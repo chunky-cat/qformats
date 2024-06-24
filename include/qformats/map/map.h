@@ -39,6 +39,7 @@ namespace qformats::map
 		QMapFile *MapData() { return map_file.get(); };
 		void SetFaceTypeByTextureID(const std::string &texture, Face::eFaceType type);
 
+		const SolidEntity *WorldSpawn() { return map_file->worldSpawn; }
 		const std::vector<SolidEntityPtr> &GetSolidEntities() { return map_file->solidEntities; };
 		const std::vector<PointEntityPtr> &GetPointEntities() { return map_file->pointEntities; };
 		std::vector<PointEntityPtr> GetPointEntitiesByClass(const std::string &className);
