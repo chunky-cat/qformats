@@ -74,7 +74,17 @@ namespace qformats::map
 		const fvec3& GetCenter() const
 		{
 			return center;
-		};
+		}
+
+		const fvec3& GetMin() const
+		{
+			return min;
+		}
+
+		const fvec3& GetMax() const
+		{
+			return max;
+		}
 
 		// stats getter
 		size_t StatsClippedFaces() const
