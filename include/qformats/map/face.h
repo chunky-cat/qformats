@@ -59,28 +59,14 @@ namespace qformats::map
 			return textureID;
 		};
 
-		[[nodiscard]] const fvec3& GetPlaneNormal() const { return planeNormal; }
-		[[nodiscard]] const float& GetPlaneDist() const { return planeDist; }
-		[[nodiscard]] const eFaceType Type() { return type; }
-		[[nodiscard]] const std::vector<Vertex>& GetVertices() const { return vertices; }
-		[[nodiscard]] const std::vector<unsigned short>& GetIndices() const { return indices; }
+		const fvec3& GetPlaneNormal() const { return planeNormal; }
+		const float& GetPlaneDist() const { return planeDist; }
+		eFaceType Type() const { return type; }
+		const std::vector<Vertex>& GetVertices() { return vertices; }
+		const std::vector<unsigned short>& GetIndices() { return indices; }
 
 		fvec3 center{}, min{}, max{};
 		bool operator==(const Face& arg_) const;
-
-		friend std::ostream&
-		operator<<(std::ostream& stream, const Face& p)
-		{
-			stream << "polygon: ";
-			for (auto& v : p.vertices)
-			{
-				stream << v << "  ";
-			}
-
-			stream << p.planeNormal;
-
-			return stream;
-		}
 
 	private:
 		fvec4 CalcTangent()

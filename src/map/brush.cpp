@@ -219,7 +219,10 @@ namespace qformats::map
 						continue;
 					}
 					auto kv = faceTypes.find(faces[k]->textureID);
-					faces[k]->type = kv->second;
+					if (kv != faceTypes.end())
+					{
+						faces[k]->type = kv->second;
+					}
 					
 					auto res = intersectPlanes(faces[i], faces[j], faces[k]);
 					if (!res.first || !isLegalVertex(res.second, faces))
