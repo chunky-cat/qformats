@@ -16,6 +16,7 @@ namespace qformats::map
 		bool DoesIntersect(const Brush& other);
 		void buildGeometry(const std::map<int, Face::eFaceType>& faceTypes);
 		void GetBiggerBBox(fvec3 &min, fvec3 &max);
+		bool IsBlockVolume() const { return isBlockVolume; }
 		[[nodiscard]] inline const std::vector<FacePtr> &GetFaces() const { return faces; }
 		fvec3 min{};
 		fvec3 max{};
@@ -30,9 +31,10 @@ namespace qformats::map
 		Vertex mergeDuplicate(int from, Vertex& v);
 		boolRet<Vertex> intersectPlanes(const FacePtr& a, const FacePtr& b, const FacePtr& c);
 		static bool isLegalVertex(const Vertex& v, const std::vector<FacePtr>& faces);
-
 		FacePtr clipToList(FaceIter first, const FaceIter& firstEnd, FaceIter second, const FaceIter& secondEnd);
 
+		bool isBlockVolume = false;
+		
 		friend class QMapFile;
 		friend class SolidEntity;
 	};

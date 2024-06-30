@@ -6,7 +6,7 @@ namespace qformats::map
 {
 	const auto fv3zero = Vertex();
 
-	void Brush::buildGeometry(const std::map<int, Face::eFaceType>& faceTypes)
+	void Brush::buildGeometry(const std::map<int, Face::eFaceType> &faceTypes)
 	{
 		generatePolygons(faceTypes);
 		windFaceVertices();
@@ -19,13 +19,13 @@ namespace qformats::map
 		outMax[0] = max[0] > outMax[0] ? max[0] : outMax[0];
 		outMax[1] = max[1] > outMax[1] ? max[1] : outMax[1];
 		outMax[2] = max[2] > outMax[2] ? max[2] : outMax[2];
-		
+
 		outMin[0] = min[0] < outMin[0] ? min[0] : outMin[0];
 		outMin[1] = min[1] < outMin[1] ? min[1] : outMin[1];
 		outMin[2] = min[2] < outMin[2] ? min[2] : outMin[2];
 	}
 
-	boolRet<Vertex> Brush::intersectPlanes(const FacePtr& a, const FacePtr& b, const FacePtr& c)
+	boolRet<Vertex> Brush::intersectPlanes(const FacePtr &a, const FacePtr &b, const FacePtr &c)
 	{
 		fvec3 n0 = a->planeNormal;
 		fvec3 n1 = b->planeNormal;
@@ -41,7 +41,7 @@ namespace qformats::map
 		return boolRet<Vertex>(true, v);
 	}
 
-	Vertex Brush::mergeDuplicate(int from, Vertex& v)
+	Vertex Brush::mergeDuplicate(int from, Vertex &v)
 	{
 		for (int n = 0; n <= from; n++)
 		{
@@ -60,7 +60,7 @@ namespace qformats::map
 	void Brush::indexFaceVertices()
 	{
 
-		for (auto& f : faces)
+		for (auto &f : faces)
 		{
 			if (f->vertices.size() < 3)
 				continue;
@@ -79,7 +79,7 @@ namespace qformats::map
 	void Brush::windFaceVertices()
 	{
 
-		for (auto& f : faces)
+		for (auto &f : faces)
 		{
 			if (f->vertices.size() < 3)
 				continue;
@@ -95,7 +95,7 @@ namespace qformats::map
 			windFaceCenter /= (float)f->vertices.size();
 
 			std::stable_sort(f->vertices.begin(), f->vertices.end(), [&](Vertex l, Vertex r)
-			{
+							 {
 
 			  fvec3 u = normalize(windFaceBasis);
 			  fvec3 v = normalize(cross(u, windFaceNormal));
@@ -115,12 +115,11 @@ namespace qformats::map
 			  {
 				  return 0;
 			  }
-			  return a_angle > b_angle ? 0 : 1;
-			});
+			  return a_angle > b_angle ? 0 : 1; });
 		}
 	}
 
-	FacePtr Brush::clipToList(FaceIter first, const FaceIter& firstEnd, FaceIter second, const FaceIter& secondEnd)
+	FacePtr Brush::clipToList(FaceIter first, const FaceIter &firstEnd, FaceIter second, const FaceIter &secondEnd)
 	{
 		if (second->get()->Type() != Face::SOLID)
 		{
@@ -159,14 +158,14 @@ namespace qformats::map
 		}
 		case Face::SPANNING:
 		{
-			//TODO: calculate split
+			// TODO: calculate split
 			return *first;
 		}
 		}
 		return *first;
 	}
 
-	std::vector<FacePtr> Brush::clipToBrush(const Brush& other)
+	std::vector<FacePtr> Brush::clipToBrush(const Brush &other)
 	{
 		auto otherFaces_iter = other.faces.begin();
 		auto faces_iter = faces.begin();
@@ -200,7 +199,7 @@ namespace qformats::map
 		return normalize(normal);
 	}
 
-	void Brush::generatePolygons(const std::map<int, Face::eFaceType>& faceTypes)
+	void Brush::generatePolygons(const std::map<int, Face::eFaceType> &faceTypes)
 	{
 		float phongAngle = 89.0;
 		for (int i = 0; i < faces.size(); i++)
@@ -219,11 +218,12 @@ namespace qformats::map
 						continue;
 					}
 					auto kv = faceTypes.find(faces[k]->textureID);
-					if (kv != faceTypes.end())
+					faces[k]->type = kv->second;
+					if (faces[k]->type == Face::CLIP)
 					{
-						faces[k]->type = kv->second;
+						isBlockVolume = true;
 					}
-					
+
 					auto res = intersectPlanes(faces[i], faces[j], faces[k]);
 					if (!res.first || !isLegalVertex(res.second, faces))
 						continue;
@@ -244,9 +244,9 @@ namespace qformats::map
 		}
 	}
 
-	bool Brush::isLegalVertex(const Vertex& v, const std::vector<FacePtr>& faces)
+	bool Brush::isLegalVertex(const Vertex &v, const std::vector<FacePtr> &faces)
 	{
-		for (const auto& f : faces)
+		for (const auto &f : faces)
 		{
 			auto proj = tue::math::dot(f->planeNormal, v.point);
 			if (proj > f->planeDist && abs(f->planeDist - proj) > 0.0008)
@@ -257,7 +257,7 @@ namespace qformats::map
 		return true;
 	}
 
-	bool Brush::DoesIntersect(const Brush& other)
+	bool Brush::DoesIntersect(const Brush &other)
 	{
 		if ((min[0] > other.max[0]) || (other.min[0] > max[0]))
 			return false;
@@ -279,8 +279,8 @@ namespace qformats::map
 		min = faces[0]->vertices[0].point;
 		max = faces[0]->vertices[0].point;
 
-		for (const auto& face : faces)
-			for (const auto& vert : face->vertices)
+		for (const auto &face : faces)
+			for (const auto &vert : face->vertices)
 			{
 				if (vert.point[0] < min[0])
 					min[0] = vert.point[0];
