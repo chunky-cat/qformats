@@ -35,14 +35,13 @@ namespace qformats::map
 					continue;
 				}
 
-				if (!b1.DoesIntersect(b2))
+				if (!b1.DoesIntersect(b2) || (b1.IsBlockVolume() || b2.IsBlockVolume()))
 				{
 					continue;
 				}
 
 				auto clippedFaces = cpBrush.clipToBrush(b2);
 				cpBrush.faces = clippedFaces;
-
 			}
 			if (!cpBrush.faces.empty())
 			{
