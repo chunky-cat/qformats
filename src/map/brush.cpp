@@ -218,10 +218,12 @@ namespace qformats::map
 						continue;
 					}
 					auto kv = faceTypes.find(faces[k]->textureID);
-					faces[k]->type = kv->second;
-					if (faces[k]->type == Face::CLIP)
-					{
-						isBlockVolume = true;
+					if (kv != faceTypes.end()) {
+						faces[k]->type = kv->second;
+						if (faces[k]->type == Face::CLIP)
+						{
+							isBlockVolume = true;
+						}
 					}
 
 					auto res = intersectPlanes(faces[i], faces[j], faces[k]);
