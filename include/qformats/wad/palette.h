@@ -14,9 +14,9 @@ namespace qformats::wad
 	{
 		unsigned char rgba[4] = { 0, 0, 0, 1 };
 	};
-
+	
 	using cvec = std::vector<color>;
-// 240
+
 	class Palette
 	{
 	public:
@@ -44,18 +44,38 @@ namespace qformats::wad
 				p.colors[col_i].rgba[1] = buff[i + 1];
 				p.colors[col_i].rgba[2] = buff[i + 2];
 				p.colors[col_i].rgba[3] = 255;
+
+				if (col_i >= 240 && col_i < 255)
+				{
+					p.brightColors.push_back(p.colors[col_i]);
+				}
 				if (col_i == 255)
+				{
 					p.colors[col_i].rgba[3] = 0;
+				}
 				col_i++;
 			}
 
 			return p;
 		}
 		color GetColor(int index);
-		cvec GetBrightColors();
+		const cvec &GetBrightColors() {return brightColors;}
+
+		bool IsBrightColor(const color &c) const
+		{
+			for (const color &bc : brightColors)
+			{
+				if (bc.rgba[0] == c.rgba[0] && bc.rgba[1] == c.rgba[1] && bc.rgba[2] == c.rgba[2])
+				{
+					return true;
+				}
+			}
+			return false;
+		}
 
 	private:
-		cvec colors;
+		cvec colors{};
+		cvec brightColors{};
 	};
 	static Palette default_palette = Palette::FromBuffer(default_palette_lmp, default_palette_size);
 }

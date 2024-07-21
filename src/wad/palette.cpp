@@ -16,12 +16,4 @@ namespace qformats::wad
 		return colors[index];
 	}
 
-	cvec Palette::GetBrightColors()
-	{
-		auto start = colors.begin() + 240;
-		auto end = colors.begin() + 254;
-		cvec result(254 - 240 + 1);
-		std::copy(start, end, result.begin());
-		return result;
-	}
 }
